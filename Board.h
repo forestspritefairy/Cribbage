@@ -1,15 +1,16 @@
 #pragma once
+#include <vector>
 
 class Board {
 public:
     Board();
-
+    void play();
 
 private:
     bool hasWon();
     void deal();
-    void play();
     void pegging();
+    bool inARow(vector<int> v);
     
     bool turn;
     Deck *deck;
