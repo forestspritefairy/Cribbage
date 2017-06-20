@@ -1,11 +1,12 @@
 #include "Board.h"
+#include "Deck.h"
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 int main() {
     Board b();
     b.play();
-
 }
 
 Board::Board() {
@@ -24,8 +25,8 @@ void Board::deal() {
     Card *cards1 = new Card[6];
     Card *cards2 = new Card[6];
     for (int i = 0; i < 6; i++) {
-        cards1[i] = deck.draw();
-        cards2[i] = deck.draw();
+        cards1[i] = deck->draw();
+        cards2[i] = deck->draw();
     }
     player1.resetHand(cards1);
     player2.resetHand(cards2);
@@ -44,7 +45,7 @@ void Board::play() {
             crib[j+1] =  cards2[i];
         }
 
-        cut = deck.cut();
+        cut = deck->cut();
         
         //Pegging
         pegging();
@@ -52,28 +53,24 @@ void Board::play() {
         //Calculate the hand scores
         if (turn) {
             player2.calculateHandScore(cut);
-            if (hasWon()) {
+            if (hasWon()) 
                 break;
-            }
+            
             player1.calculateHandScore(cut);
-            if (hasWon()) {
-                break;
-            }
+            if (hasWon()) break;
+            
         }
         else {
             player1.calculateHandScore(cut);
-            if (hasWon()) {
-                break;
-            }
+            if (hasWon()) break;
+            
             player2.calculateHandScore(cut);
-            if (hasWon()) {
-                break;
-            }
+            if (hasWon()) break;
         }
 
         //Change Turn and reset the deck
         turn = !turn;
-        deck.resetDeck();
+        deck->resetDeck();
     }
 }
 
@@ -86,30 +83,29 @@ void Board::pegging() {
     vector<int> pastCards;
 
     while (player1CardsPlayed < 4 || player2CardsPlayed < 4) {
+        //Player whoes turn it is plays a card.
+        //If the value is 0 they cant play.
         int play;
-        //int play = playTurn ? player2.playCard(sum) : player1.playCard(sum);
         if (playTurn) {
             play = player2.playCard(sum);
             if(play != 0) player2CardsPlayed++;
-        }
-        else {
+        } else {
             play = player1.playCard(sum);
             if(play != 0) player1CardsPlayed++;
         }
+
+        //If the payer could not play tell the program that they passed.
+        //If the other player had already passed then reset the sum and replay
         if (play == 0) {
             if (passTrack) {
                 sum = 0;
                 pastCards.clear();
-                if (playTurn) 
-                    player2.addScore(1);
-                else 
-                    player1.addScore(1);
-            }
-            else {
-                passTrack = true;
-            }
-        }
-        else {
+                if (playTurn) player2.addScore(1);
+                else player1.addScore(1);
+            } else passTrack = true;
+        //If they could play figure out if they got any points.
+        } else {
+            passTrack = false;
             sum+= play;
             int score = 0;
             pastCards.push_back(play);
@@ -126,22 +122,41 @@ void Board::pegging() {
                         //3 of a kind
                         score += 6;
                     }
-                    else
-                    {
+                    else {
                         //2 of a kind
                         score += 2;
                     }
                 }
             }
             else {
-
+                //3 in a row
+                
+                if (pastCards.size >= 3) {
+                    vector<int> rowCheck;
+                    for (int i = 1; i < 4; i++) {
+                        rowCheck.push_back(pastCards.at(pastCards.size - i));
+                    }
+                    sort(rowCheck.begin(), rowCheck.end());
+                    if (inARow(rowCheck)) {
+                        score += 3;
+                        int counter = 4;
+                        while (pastCards.size >= counter && counter < 8) {
+                            rowCheck.push_back(pastCards.at(pastCards.size - counter));
+                            sort(rowCheck.begin(), rowCheck.end());
+                            if(inARow(rowCheck)) score++;
+                        }
+                    }
+                }
+                
             }
-            if (sum == 15 || sum == 31) {
-                score += 2;
-            }
 
+            if (sum == 15 || sum == 31) score += 2;
+
+            if (playTurn) player2.addScore(score);
+            else player1.addScore(score);
         }
 
+        //Check if the person who played has won the game.
         if (hasWon()) {
             //End The program 
         }
