@@ -136,13 +136,11 @@ void Board::pegging() {
                     for (int i = 1; i < 4; i++) {
                         rowCheck.push_back(pastCards.at(pastCards.size - i));
                     }
-                    sort(rowCheck.begin(), rowCheck.end());
                     if (inARow(rowCheck)) {
                         score += 3;
                         int counter = 4;
                         while (pastCards.size >= counter && counter < 8) {
                             rowCheck.push_back(pastCards.at(pastCards.size - counter));
-                            sort(rowCheck.begin(), rowCheck.end());
                             if(inARow(rowCheck)) score++;
                         }
                     }
@@ -161,4 +159,15 @@ void Board::pegging() {
             //End The program 
         }
     }
+}
+
+bool Board::inARow(vector<int> v)
+{
+    sort(v.begin(), v.end());
+    for (int i = 1; i < v.size(); i++) {
+        if (v.at(i - 1) + 1 != v.at(i)) {
+            return false;
+        }
+    }
+    return true;
 }
