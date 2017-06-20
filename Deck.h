@@ -22,6 +22,10 @@ private:
 
 
 struct Card {
+	Card() {
+        	value = 0;
+		suit = 0;
+    	}
 	Card(int val, int s) {
 		value = val;
 		suit = s;
