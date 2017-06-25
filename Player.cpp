@@ -1,12 +1,22 @@
 #pragma once
 #include "Player.h"
 #include <vector>
-#include <algorithm>
 #include <iostream>
 
 using namespace std;
 
 int Player::calculateHandScore(Card cut) {
+    vector<Card> fullHand = holdingHand;
+    fullHand.push_back(cut);
+    
+    printCards(fullHand);
+    cout << endl;
+    cout << "15's:      " << score15(cut) << endl;
+    cout << "Runs:      " << scoreRuns(cut) << endl;
+    cout << "Of a Kind: " << scoreOfAKind(cut) << endl;
+    cout << "Nubs:      " << scoreNubs(cut) << endl;
+    cout << "Total:     " << score15(cut) + scoreRuns(cut) + scoreOfAKind(cut) + scoreNubs(cut) << endl;
+    cout << endl;
     return score15(cut) + scoreRuns(cut) + scoreOfAKind(cut) + scoreNubs(cut);
 }
 
@@ -23,19 +33,21 @@ int Player::score15(Card cut) {
 
 
  int Player::find15(vector<Card> numbers, int index, int sum, int score) {
+    if (sum > 15) {
+         return score;
+    }
+    if (sum == 15) {
+        return score + 2;
+    }
     if (index == numbers.size()) {
-        if(sum == 15) score += 2;
+        
         return score;
     }
-
-    // include numbers[index]
-    score += find15(numbers, index + 1, sum + numbers[index].value, score);
-
-    // exclude numbers[index]
-    return find15(numbers, index + 1, sum, score);
+    //Left half is the inclusive. Right half is the exclusive.
+    return find15(numbers, index + 1, sum + numbers[index].value, score) + find15(numbers, index + 1, sum, score);
 }
 
- void Player::printCards(vector<Card> v) {
+ void printCards(vector<Card> v) {
      for (int i = 0; i < v.size(); i++) {
          cout << v.at(i).id << " ";
      }
@@ -55,13 +67,11 @@ int Player::score15(Card cut) {
 
 }
 
-
-
 int Player::scoreRuns(Card cut) {
     vector<Card> fullHand = holdingHand;
     fullHand.push_back(cut);
 
-    sort(fullHand.begin(), fullHand.end());
+    sort(fullHand);
 
     int multipiler = 1;
     int runLength = 1;
@@ -107,7 +117,7 @@ int Player::scoreOfAKind(Card cut) {
             s += 4;
         }
         //4 of a kind
-        else {
+        else if(counter == 3) {
             return 12;
         }
         counter = 0;
@@ -122,4 +132,21 @@ int Player::scoreNubs(Card cut) {
         }
     }
     return 0;
+}
+
+void sort(vector<Card>& v) {
+    bool swapped = true;
+    int n = v.size();
+    while (swapped) {
+        swapped = false;
+        for (int i = 1; i < n; i++) {
+            if (v[i - 1] > v[i]) {
+                Card temp = v.at(i-1);
+                v[i-1] = v[i];
+                v[i] = temp;
+                swapped = true;
+            }
+        }
+        n = n-1;
+    }
 }
