@@ -3,8 +3,11 @@
 
 using namespace std;
 
-int Human::playCard(int sum) {
+Card Human::playCard(int sum) {
     int input;
+    if (playingHand.size() == 0) {
+        return Card();
+    }
     while(true) {
         cout << "The Current Sum is " << sum << endl;
         cout << "Your Cards are" << endl;
@@ -12,12 +15,13 @@ int Human::playCard(int sum) {
         cout << "Enter a number representing the index of the card you want.";
     
         cin >> input;
-        if (input > 0 && input < playingHand.size() && playingHand.at(input).value + sum < 31) {
+        if (input >= 0 && input < playingHand.size() && playingHand.at(input).value + sum < 31) {
             break;
         }
     }
+    Card choice = playingHand.at(input);
     playingHand.erase(playingHand.begin() + input);
-    return playingHand.at(input).value;
+    return choice;
 }
 
 vector<Card> Human::getCribCards(bool turn) {
@@ -38,7 +42,7 @@ vector<Card> Human::getCribCards(bool turn) {
         cin >> in1;
         cin >> in2;
 
-        if (in1 > 0 && in1 < holdingHand.size() && in2 > 0 && in2 < holdingHand.size() && in1 != in2) {
+        if (in1 >= 0 && in1 < holdingHand.size() && in2 >= 0 && in2 < holdingHand.size() && in1 != in2) {
             break;
         }
     }
