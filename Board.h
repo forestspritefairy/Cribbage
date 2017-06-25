@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "Player.h"
 
 class Board {
 public:
@@ -16,6 +17,5 @@ private:
     Deck *deck;
     Player *player1;
     Player *player2;
-    Card *cut;
-    Card * crib;
+    vector<Card> crib;
 };
