@@ -4,14 +4,14 @@
 class Player {
 
 public:
-    virtual int playCard(int turn) = 0;
+    virtual Card playCard(int turn) = 0;
     virtual vector<Card> getCribCards(bool turn) = 0;
 
     int getScore() { return score; }
     int calculateHandScore(Card cut);
     void resetHand(vector<Card> *newHand);
     void addScore(int newScore) { score += newScore; }
-    void printCards(vector<Card> v);
+    
 
     vector<Card> holdingHand;
     vector<Card> playingHand;
@@ -26,3 +26,6 @@ private:
     int score;
     
 };
+
+void printCards(vector<Card> v);
+void sort(vector<Card> &v);
