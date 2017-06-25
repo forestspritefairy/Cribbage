@@ -29,7 +29,7 @@ struct Card {
     }
 
     bool operator>(const Card & other) {
-        return (this->id > other.id) || (this->suit > other.suit);
+        return (this->id > other.id) || (this->id == other.id && this->suit > other.suit);
     }
 
     bool operator>=(const Card & other) {
@@ -37,7 +37,7 @@ struct Card {
     }
 
     bool operator<(const Card & other) {
-        return (this->id < other.id) || (this->suit < other.suit);
+        return (this->id < other.id) || (this->id == other.id && this->suit < other.suit);
     }
 
     bool operator<=(const Card & other) {
