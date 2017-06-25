@@ -1,15 +1,15 @@
 #include "Computer.h"
 
-int Computer::playCard(int sum) {
+Card Computer::playCard(int sum) {
     for (int i = 0; i < playingHand.size(); i++) {
-        int cardVal = playingHand.at(i).value;
-        if (cardVal + sum <= 31) {
+        Card choice = playingHand.at(i);
+        if (choice.value + sum <= 31) {
             playingHand.erase(playingHand.begin() + i);
-            return cardVal;
+            return choice;
         }
     }
     //Can't Play
-    return 0;
+    return Card();
 }
 
 vector<Card> Computer::getCribCards(bool turn) {
