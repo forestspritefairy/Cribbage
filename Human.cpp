@@ -1,61 +1,31 @@
-#include <iostream>
-#include "Human.h"
+#pragma once
+#include "Deck.h"
 
-using namespace std;
+class Player {
 
-Card Human::playCard(int sum) {
-    int input;
-    if (playingHand.size() == 0) {
-        return Card();
-    }
-    while(true) {
-        cout << "The Current Sum is " << sum << endl;
-        cout << "Your Cards are" << endl;
-        printCards(playingHand);
-        cout << "Enter a number representing the index of the card you want.";
+public:
+    virtual Card playCard(int turn) = 0;
+    virtual vector<Card> getCribCards(bool turn) = 0;
+
+    int getScore() { return score; }
+    int calculateHandScore(Card cut);
+    void resetHand(vector<Card> *newHand);
+    void addScore(int newScore) { score += newScore; }
     
-        cin >> input;
-        if (input >= 0 && input < playingHand.size() && playingHand.at(input).value + sum < 31) {
-            break;
-        }
-    }
-    Card choice = playingHand.at(input);
-    playingHand.erase(playingHand.begin() + input);
-    return choice;
-}
 
-vector<Card> Human::getCribCards(bool turn) {
-    int in1;
-    int in2;
-    while(true) {
-        if(turn){
-            cout << "It is currently your crib." << endl;
-        }
-        else {
-            cout << "It is currently not your crib." << endl;
-        }
-        cout << "Your cards are" << endl;
-        printCards(holdingHand);
-        cout << "Enter two numbers representing the indexes of" << endl;
-        cout << "the cards you want to remove." << endl;
+    vector<Card> holdingHand;
+    vector<Card> playingHand;
 
-        cin >> in1;
-        cin >> in2;
+private:
+    int score15(Card cut);
+    int scoreRuns(Card cut);
+    int scoreOfAKind(Card cut);
+    int scoreNubs(Card cut);
+    int find15(vector<Card> numbers, int index, int sum, int score);
 
-        if (in1 >= 0 && in1 < holdingHand.size() && in2 >= 0 && in2 < holdingHand.size() && in1 != in2) {
-            break;
-        }
-    }
-    vector<Card> cribIn;
-    cribIn.push_back(holdingHand.at(in1));
-    cribIn.push_back(holdingHand.at(in2));
+    int score;
+    
+};
 
-    holdingHand.erase(holdingHand.begin() + in1);
-    if (in1 < in2) {
-        in2--;
-    }
-    holdingHand.erase(holdingHand.begin() + in2);
-
-    playingHand = holdingHand;
-    return cribIn;
-}
+void printCards(vector<Card> v);
+void sort(vector<Card> &v);
