@@ -3,6 +3,6 @@
 
 class Human : public Player {
 public:
-    int playCard(int turn);
+    Card playCard(int turn);
     vector<Card> getCribCards(bool turn);
 };
