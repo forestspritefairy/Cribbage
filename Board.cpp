@@ -41,48 +41,65 @@ void Board::deal() {
 
 void Board::play() {
     while (true) {
+        cout << "--------------------------" << endl;
         cout << "The Scores are." << endl;
         cout << "Player 1: " << player1->getScore() << endl;
         cout << "Player 2: " << player2->getScore() << endl;
-        
+        cout << endl;
         //Deal Cards
         deal();
 
         //Get the crib cards from players and set them to the crib
         vector<Card> cards1 = player1->getCribCards(turn);
         vector<Card> cards2 = player2->getCribCards(turn);
-
         for (int i = 0; i < 2; i++) {
             crib.push_back(cards1.at(i));
             crib.push_back(cards2.at(i));
         }
+
         Card *cut = &deck->cut();
         
         //Pegging
         pegging();
 
         //Calculate the hand scores
+        int p1Score = player1->calculateHandScore(*cut);
+        int p2Score = player2->calculateHandScore(*cut);
+
+        //Checking to see if either player won.
         if (turn) {
-            player2->calculateHandScore(*cut);
+            player2->addScore(p2Score);
             if (hasWon()) 
                 break;
             
-            player1->calculateHandScore(*cut);
+            player1->addScore(p1Score);
             if (hasWon()) break;
             
         }
         else {
-            player1->calculateHandScore(*cut);
+            player1->addScore(p1Score);
             if (hasWon()) break;
             
-            player2->calculateHandScore(*cut);
+            player2->addScore(p2Score);
             if (hasWon()) break;
         }
-
+        cout << "Player 1 has recived " << p1Score << " points" << endl;
+        cout << "Player 2 has recived " << p2Score << " points" << endl;
+        
         //Change Turn and reset the deck
         turn = !turn;
+        cout << "Reseting the hands..." << endl;
         deck->resetDeck();
     }
+
+    if (player1->getScore() > player2->getScore()) {
+        cout << "Player 1 has won the game. Good Job!" << endl;
+    }
+    else {
+        cout << "Player 2 has won the game. Good Job!" << endl;
+    }
+    cin.get();
+    cin.get();
 }
 
 void Board::pegging() {
@@ -95,19 +112,19 @@ void Board::pegging() {
 
     while (player1CardsPlayed < 4 || player2CardsPlayed < 4) {
         //Player whoes turn it is plays a card.
-        //If the value is 0 they cant play.
-        int play;
+        //If the value is 0 they could not play.
+        Card play;
         if (playTurn) {
             play = player2->playCard(sum);
-            if(play != 0) player2CardsPlayed++;
+            if(play.id != 0) player2CardsPlayed++;
         } else {
             play = player1->playCard(sum);
-            if(play != 0) player1CardsPlayed++;
+            if(play.id != 0) player1CardsPlayed++;
         }
 
         //If the payer could not play tell the program that they passed.
         //If the other player had already passed then reset the sum and replay
-        if (play == 0) {
+        if (play.id == 0) {
             if (passTrack) {
                 sum = 0;
                 pastCards.clear();
@@ -117,9 +134,9 @@ void Board::pegging() {
         //If they could play figure out if they got any points.
         } else {
             passTrack = false;
-            sum+= play;
+            sum+= play.value;
             int score = 0;
-            pastCards.push_back(play);
+            pastCards.push_back(play.id);
             if(pastCards.size() >= 2){
                 if (pastCards[pastCards.size() - 1] == pastCards[pastCards.size() - 2]) {
                     if (pastCards.size() >= 4 
