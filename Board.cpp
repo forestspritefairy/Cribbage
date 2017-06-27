@@ -19,8 +19,6 @@ Board::Board() {
     deck = new Deck();
     player1 = new Human();
     player2 = new Computer();
-    
-    turn = true;
 }
 
 bool Board::hasWon() {
@@ -40,31 +38,29 @@ void Board::deal() {
 }
 
 void Board::play() {
+    bool turn = true;
     while (true) {
         cout << "--------------------------" << endl;
         cout << "The Scores are." << endl;
         cout << "Player 1: " << player1->getScore() << endl;
         cout << "Player 2: " << player2->getScore() << endl;
         cout << endl;
-        //Deal Cards
+
         deal();
 
         //Get the crib cards from players and set them to the crib
-        vector<Card> cards1 = player1->getCribCards(turn);
+        vector<Card> crib = player1->getCribCards(turn);
         vector<Card> cards2 = player2->getCribCards(turn);
-        for (int i = 0; i < 2; i++) {
-            crib.push_back(cards1.at(i));
-            crib.push_back(cards2.at(i));
-        }
+        crib.insert(crib.end(), cards2.begin(), cards2.end());
 
         Card *cut = &deck->cut();
         
-        //Pegging
-        pegging();
+        //If pegging returns true someone won the game.
+        if (pegging(turn)) break;
 
         //Calculate the hand scores
-        int p1Score = player1->calculateHandScore(*cut);
-        int p2Score = player2->calculateHandScore(*cut);
+        int p1Score = calculateHandScore(player1->holdingHand, *cut);
+        int p2Score = calculateHandScore(player2->holdingHand, *cut);
 
         //Checking to see if either player won.
         if (turn) {
@@ -102,7 +98,7 @@ void Board::play() {
     cin.get();
 }
 
-void Board::pegging() {
+bool Board::pegging(bool turn) {
     int sum = 0;
     int player1CardsPlayed = 0;
     int player2CardsPlayed = 0;
@@ -110,16 +106,30 @@ void Board::pegging() {
     bool passTrack = false;
     vector<int> pastCards;
 
+    cout << endl;
+    cout << "--------------------------" << endl;
+    cout << "Begin Pegging." << endl;
+    cout << endl;
     while (player1CardsPlayed < 4 || player2CardsPlayed < 4) {
         //Player whoes turn it is plays a card.
         //If the value is 0 they could not play.
         Card play;
         if (playTurn) {
             play = player2->playCard(sum);
-            if(play.id != 0) player2CardsPlayed++;
+            if(play.id != 0) {
+                player2CardsPlayed++;
+                cout << endl;
+                cout << "Player 2 Played:" << endl;
+                cout << play;
+            }
         } else {
             play = player1->playCard(sum);
-            if(play.id != 0) player1CardsPlayed++;
+            if(play.id != 0) {
+                player1CardsPlayed++;
+                cout << endl;
+                cout << "Player 1 Played:" << endl;
+                cout << play;
+            }
         }
 
         //If the payer could not play tell the program that they passed.
@@ -135,48 +145,9 @@ void Board::pegging() {
         } else {
             passTrack = false;
             sum+= play.value;
-            int score = 0;
             pastCards.push_back(play.id);
-            if(pastCards.size() >= 2){
-                if (pastCards[pastCards.size() - 1] == pastCards[pastCards.size() - 2]) {
-                    if (pastCards.size() >= 4 
-                        && pastCards[pastCards.size() - 2] == pastCards[pastCards.size() - 3] 
-                        && pastCards[pastCards.size() - 3] == pastCards[pastCards.size() - 4]) {
-                        //4 of a kind
-                        score += 12;
-                    }
-                    else if (pastCards.size() >= 3
-                        && pastCards[pastCards.size() - 2] == pastCards[pastCards.size() - 3]) {
-                        //3 of a kind
-                        score += 6;
-                    }
-                    else {
-                        //2 of a kind
-                        score += 2;
-                    }
-                }
-            }
-            else {
-                //3 in a row
-                
-                if (pastCards.size() >= 3) {
-                    vector<int> rowCheck;
-                    for (int i = 1; i < 4; i++) {
-                        rowCheck.push_back(pastCards.at(pastCards.size() - i));
-                    }
-                    if (inARow(rowCheck)) {
-                        score += 3;
-                        int counter = 4;
-                        while (pastCards.size() >= counter && counter < 8) {
-                            rowCheck.push_back(pastCards.at(pastCards.size() - counter));
-                            if(inARow(rowCheck)) score++;
-                        }
-                    }
-                }
-                
-            }
-
-            if (sum == 15 || sum == 31) score += 2;
+            
+            int score = checkForPeggingPoints(pastCards, sum);
 
             if (playTurn) player2->addScore(score);
             else player1->addScore(score);
@@ -184,19 +155,63 @@ void Board::pegging() {
 
         //Check if the person who played has won the game.
         if (hasWon()) {
+            return true;
             //End The program 
         }
         playTurn = !playTurn;
     }
+    return false;
 }
 
-bool Board::inARow(vector<int> v)
-{
+bool Board::inARow(vector<int> v) {
     sort(v.begin(), v.end());
-    for (int i = 1; i < v.size(); i++) {
-        if (v.at(i - 1) + 1 != v.at(i)) {
-            return false;
+    for (int i = 1; i < v.size(); i++) 
+        if (v[i - 1] + 1 != v[i]) return false;
+
+    return true;
+}
+
+int Board::checkForPeggingPoints(vector<int> pastCards, int sum) {
+    int score = 0;
+
+    if (pastCards.size() >= 2) {
+        if (pastCards[pastCards.size() - 1] == pastCards[pastCards.size() - 2]) {
+            if (pastCards.size() >= 4
+                && pastCards[pastCards.size() - 2] == pastCards[pastCards.size() - 3]
+                && pastCards[pastCards.size() - 3] == pastCards[pastCards.size() - 4]) {
+                //4 of a kind
+                score += 12;
+            }
+            else if (pastCards.size() >= 3
+                && pastCards[pastCards.size() - 2] == pastCards[pastCards.size() - 3]) {
+                //3 of a kind
+                score += 6;
+            }
+            else {
+                //2 of a kind
+                score += 2;
+            }
         }
     }
-    return true;
+    else {
+        //3 in a row
+        if (pastCards.size() >= 3) {
+            vector<int> rowCheck;
+            for (int i = 1; i < 4; i++) {
+                rowCheck.push_back(pastCards[pastCards.size() - i]);
+            }
+            if (inARow(rowCheck)) {
+                score += 3;
+                int counter = 4;
+                while (pastCards.size() >= counter && counter < 8) {
+                    rowCheck.push_back(pastCards[pastCards.size() - counter]);
+                    if (inARow(rowCheck)) score++;
+                }
+            }
+        }
+
+    }
+    if (sum == 15 || sum == 31) score += 2;
+
+    return score;
 }

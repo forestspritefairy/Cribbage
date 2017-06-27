@@ -2,7 +2,7 @@
 
 Card Computer::playCard(int sum) {
     for (int i = 0; i < playingHand.size(); i++) {
-        Card choice = playingHand.at(i);
+        Card choice = playingHand[i];
         if (choice.value + sum <= 31) {
             playingHand.erase(playingHand.begin() + i);
             return choice;

@@ -13,7 +13,7 @@ Deck::Deck() {
 Card Deck::draw() {
     int random = rand() % (cards.size() - 1);
     Card draw = cards.at(random);
-    cards.erase(cards.begin() + (random - 1));
+    cards.erase(cards.begin() + random);
     return draw;
 }
 

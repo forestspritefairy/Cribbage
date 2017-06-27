@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -42,6 +43,22 @@ struct Card {
 
     bool operator<=(const Card & other) {
         return !(*this > other);
+    }
+
+    friend ostream& operator<<(ostream& out, const Card c) {
+        if (c.id == 1) out << "Ace     ";
+        else if (c.id == 11) out << "Jack    ";
+        else if (c.id == 12) out << "Queen   ";
+        else if (c.id == 13) out << "King    ";
+        else if (c.id == 10) out << c.id << "      ";
+        else out << c.id << "       ";
+
+        if (c.suit == 0) out << "Hearts" << endl;
+        else if (c.suit == 1) out << "Diamonds" << endl;
+        else if (c.suit == 2) out << "Clubs" << endl;
+        else out << "Spades" << endl;
+
+        return out;
     }
     
     int id; // numerical value cards, respective. ACE=1 JACK=11 QUEEN=12 KING=14, NO jokers

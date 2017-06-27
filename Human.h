@@ -5,4 +5,7 @@ class Human : public Player {
 public:
     Card playCard(int turn);
     vector<Card> getCribCards(bool turn);
+
+private:
+    bool canPlay(int sum);
 };

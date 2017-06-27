@@ -7,6 +7,9 @@ Card Human::playCard(int sum) {
     int input;
     if (playingHand.size() == 0) {
         return Card();
+    } 
+    if (!canPlay(sum)) {
+        return Card();
     }
     while(true) {
         cout << "The Current Sum is " << sum << endl;
@@ -15,11 +18,11 @@ Card Human::playCard(int sum) {
         cout << "Enter a number representing the index of the card you want.";
     
         cin >> input;
-        if (input >= 0 && input < playingHand.size() && playingHand.at(input).value + sum < 31) {
+        if (input >= 0 && input < playingHand.size() && playingHand[input].value + sum < 31) {
             break;
         }
     }
-    Card choice = playingHand.at(input);
+    Card choice = playingHand[input];
     playingHand.erase(playingHand.begin() + input);
     return choice;
 }
@@ -47,8 +50,8 @@ vector<Card> Human::getCribCards(bool turn) {
         }
     }
     vector<Card> cribIn;
-    cribIn.push_back(holdingHand.at(in1));
-    cribIn.push_back(holdingHand.at(in2));
+    cribIn.push_back(holdingHand[in1]);
+    cribIn.push_back(holdingHand[in2]);
 
     holdingHand.erase(holdingHand.begin() + in1);
     if (in1 < in2) {
@@ -58,4 +61,13 @@ vector<Card> Human::getCribCards(bool turn) {
 
     playingHand = holdingHand;
     return cribIn;
+}
+
+bool Human::canPlay(int sum) {
+    for (int i = 0; i < playingHand.size(); i++) {
+        if (playingHand[i].value + sum <= 31) {
+            return true;
+        }
+    }
+    return false;
 }
