@@ -59,8 +59,12 @@ private:
     bool pegging(bool turn);
     bool inARow(vector<int> v);
     int checkForPeggingPoints(vector<int> pastCards, int sum);
-    
+    void printTable(vector<int> player1Scores, vector<int> player2Scores);
+
     Deck *deck;
     Player *player1;
     Player *player2;
 };
+
+ostream& print(ostream& out, const int num);
+string wordCheck(int num);

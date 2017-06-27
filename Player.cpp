@@ -10,25 +10,17 @@ void Player::resetHand(vector<Card> *newHand) {
     playingHand = *newHand;
 }
 
-int calculateHandScore(vector<Card> hand, Card cut) {
+vector<int> calculateHandScore(vector<Card> hand, Card cut) {
+    vector<int> scores;
     vector<Card> fullHand = hand;
     fullHand.push_back(cut);
-    
-    int p15 = score15(fullHand);
-    int pRuns = scoreRuns(fullHand);
-    int pOfAKind = scoreOfAKind(fullHand);
-    int pNubs = scoreNubs(fullHand, cut);
 
-    printCards(fullHand);
-    cout << endl;
-    cout << "15's:      " << p15 << endl;
-    cout << "Runs:      " << pRuns << endl;
-    cout << "Of a Kind: " << pOfAKind << endl;
-    cout << "Nubs:      " << pNubs << endl;
-    cout << "Total:     " << (p15 + pRuns + pOfAKind + pNubs) << endl;
-    cout << endl;
+    scores.push_back(score15(fullHand));
+    scores.push_back(scoreRuns(fullHand));
+    scores.push_back(scoreOfAKind(fullHand));
+    scores.push_back(scoreNubs(fullHand, cut));
 
-    return (p15 + pRuns + pOfAKind + pNubs);
+    return scores;
 }
 
 int score15(const vector<Card> hand) {
@@ -47,7 +39,7 @@ int find15(const vector<Card> numbers, int index, int sum, int score) {
 void printCards(const vector<Card> v) {
     cout << "Index | Type  | Suit" << endl;
     for (int i = 0; i < v.size(); i++) {
-        cout << " " << i << "      " << v[i];
+        cout << " " << i << "      " << v[i] << endl;
     }
 }
 

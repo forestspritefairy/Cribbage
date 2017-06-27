@@ -53,10 +53,10 @@ struct Card {
         else if (c.id == 10) out << c.id << "      ";
         else out << c.id << "       ";
 
-        if (c.suit == 0) out << "Hearts" << endl;
-        else if (c.suit == 1) out << "Diamonds" << endl;
-        else if (c.suit == 2) out << "Clubs" << endl;
-        else out << "Spades" << endl;
+        if (c.suit == 0) out << "Hearts   ";
+        else if (c.suit == 1) out << "Diamonds ";
+        else if (c.suit == 2) out << "Clubs    ";
+        else out << "Spades   ";
 
         return out;
     }

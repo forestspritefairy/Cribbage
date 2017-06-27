@@ -59,28 +59,30 @@ void Board::play() {
         if (pegging(turn)) break;
 
         //Calculate the hand scores
-        int p1Score = calculateHandScore(player1->holdingHand, *cut);
-        int p2Score = calculateHandScore(player2->holdingHand, *cut);
+        vector<int> p1Score = calculateHandScore(player1->holdingHand, *cut);
+        vector<int> p2Score = calculateHandScore(player2->holdingHand, *cut);
 
+        printTable(p1Score, p2Score);
+
+        int p1Total = p1Score[0] + p1Score[1] + p1Score[2] + p1Score[3];
+        int p2Total = p2Score[0] + p2Score[1] + p2Score[2] + p2Score[3];
         //Checking to see if either player won.
         if (turn) {
-            player2->addScore(p2Score);
+            player2->addScore(p2Total);
             if (hasWon()) 
                 break;
             
-            player1->addScore(p1Score);
+            player1->addScore(p1Total);
             if (hasWon()) break;
             
         }
         else {
-            player1->addScore(p1Score);
+            player1->addScore(p1Total);
             if (hasWon()) break;
             
-            player2->addScore(p2Score);
+            player2->addScore(p2Total);
             if (hasWon()) break;
         }
-        cout << "Player 1 has recived " << p1Score << " points" << endl;
-        cout << "Player 2 has recived " << p2Score << " points" << endl;
         
         //Change Turn and reset the deck
         turn = !turn;
@@ -214,4 +216,51 @@ int Board::checkForPeggingPoints(vector<int> pastCards, int sum) {
     if (sum == 15 || sum == 31) score += 2;
 
     return score;
+}
+
+void Board::printTable(vector<int> p1Scores, vector<int> p2Scores) {
+    cout << endl;
+    cout << endl;
+    cout << "------------------------------------------------------" << endl;
+    cout << "|Criteria  | Player 1            | Player 2    " << endl;
+    cout << "|----------|---------------------|--------------------"<< endl;
+    cout << "|Hand      | ";
+
+    cout << "Type    Suit        |  Type    Suit" << endl;
+
+    for (int i = 0; i < player1->holdingHand.size(); i++) {
+        cout << "|          | " << player1->holdingHand[i] << "   |  " << player2->holdingHand[i] << endl;
+    }
+    cout << "|----------|---------------------|--------------------" << endl;
+
+    cout << "|Scores    | ";
+    
+    cout << "15's:      " << p1Scores[0] << "        | " << "15's:      " << p2Scores[0] << endl;
+    cout << "|          | Runs:      " << p1Scores[1] << "        | " << "Runs:      " << p2Scores[1] << endl;
+    cout << "|          | Of a Kind: " << p1Scores[2] << "        | " << "Of a Kind: " << p2Scores[2] << endl;
+    cout << "|          | Nubs:      " << p1Scores[3] << "        | " << "Nubs:      " << p2Scores[3] << endl;
+    cout << "|----------|---------------------|--------------------" << endl;
+
+    int p1Total = (p1Scores[0] + p1Scores[1] + p1Scores[2] + p1Scores[3]);
+    int p2Total = (p2Scores[0] + p2Scores[1] + p2Scores[2] + p2Scores[3]);
+
+    cout << "|Total     | " << p1Total;
+    if(p1Total < 10) cout << " ";
+
+    cout << "                  | " << p2Total << endl;
+   // cout << "|          | Total:     " << (p1Scores[0] + p1Scores[1] + p1Scores[2] + p1Scores[3]) << "        | " 
+   //      << "Total:     " << (p2Scores[0] + p2Scores[1] + p2Scores[2] + p2Scores[3]) << endl;
+    cout << "------------------------------------------------------" << endl;
+    cout << endl;
+}
+
+ostream& print(ostream& out, const int num) {
+    if (num < 10) out << num << " ";
+    out << num;
+    return out;
+}
+
+string wordCheck(int num) {
+    if(num < 10 ) return num + " ";
+    return num + "";
 }

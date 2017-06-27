@@ -19,7 +19,7 @@ private:
     int score;
 };
 
-int calculateHandScore(vector<Card> hand, Card cut);
+vector<int> calculateHandScore(vector<Card> hand, Card cut);
 int score15(const vector<Card> hand);
 int scoreRuns(vector<Card> hand);
 int scoreOfAKind(vector<Card> hand);
