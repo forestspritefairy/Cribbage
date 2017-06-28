@@ -37,10 +37,14 @@ int find15(const vector<Card> numbers, int index, int sum, int score) {
 }
 
 void printCards(const vector<Card> v) {
-    cout << "Index | Type  | Suit" << endl;
+    cout << "Your Cards" << endl;
+    cout << "---------------------------" << endl;
+    cout << "|Index | Card             |" << endl;
+    cout << "|------|------------------|" << endl;
     for (int i = 0; i < v.size(); i++) {
-        cout << " " << i << "      " << v[i] << endl;
+        cout << "| " << i << "    | " << v[i] << "|" << endl;
     }
+    cout << "---------------------------" << endl;
 }
 
 int scoreRuns(vector<Card> hand) {

@@ -1,6 +1,6 @@
 #include "Computer.h"
 
-Card Computer::playCard(int sum) {
+Card Computer::playCard(vector<Card> pastCards, int sum) {
     for (int i = 0; i < playingHand.size(); i++) {
         Card choice = playingHand[i];
         if (choice.value + sum <= 31) {

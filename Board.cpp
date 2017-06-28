@@ -8,6 +8,8 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <string>
+#include <windows.h>
 using namespace std;
 
 int main() {
@@ -40,12 +42,7 @@ void Board::deal() {
 void Board::play() {
     bool turn = true;
     while (true) {
-        cout << "--------------------------" << endl;
-        cout << "The Scores are." << endl;
-        cout << "Player 1: " << player1->getScore() << endl;
-        cout << "Player 2: " << player2->getScore() << endl;
-        cout << endl;
-
+        printRoundStart();
         deal();
 
         //Get the crib cards from players and set them to the crib
@@ -86,7 +83,6 @@ void Board::play() {
         
         //Change Turn and reset the deck
         turn = !turn;
-        cout << "Reseting the hands..." << endl;
         deck->resetDeck();
     }
 
@@ -106,31 +102,22 @@ bool Board::pegging(bool turn) {
     int player2CardsPlayed = 0;
     bool playTurn = turn;
     bool passTrack = false;
-    vector<int> pastCards;
+    vector<Card> pastCards;
 
-    cout << endl;
-    cout << "--------------------------" << endl;
-    cout << "Begin Pegging." << endl;
-    cout << endl;
     while (player1CardsPlayed < 4 || player2CardsPlayed < 4) {
         //Player whoes turn it is plays a card.
         //If the value is 0 they could not play.
         Card play;
         if (playTurn) {
-            play = player2->playCard(sum);
+            play = player2->playCard(pastCards, sum);
             if(play.id != 0) {
                 player2CardsPlayed++;
-                cout << endl;
-                cout << "Player 2 Played:" << endl;
-                cout << play;
             }
         } else {
-            play = player1->playCard(sum);
+            
+            play = player1->playCard(pastCards, sum);
             if(play.id != 0) {
                 player1CardsPlayed++;
-                cout << endl;
-                cout << "Player 1 Played:" << endl;
-                cout << play;
             }
         }
 
@@ -147,7 +134,7 @@ bool Board::pegging(bool turn) {
         } else {
             passTrack = false;
             sum+= play.value;
-            pastCards.push_back(play.id);
+            pastCards.push_back(play);
             
             int score = checkForPeggingPoints(pastCards, sum);
 
@@ -173,19 +160,19 @@ bool Board::inARow(vector<int> v) {
     return true;
 }
 
-int Board::checkForPeggingPoints(vector<int> pastCards, int sum) {
+int Board::checkForPeggingPoints(vector<Card> pastCards, int sum) {
     int score = 0;
 
     if (pastCards.size() >= 2) {
-        if (pastCards[pastCards.size() - 1] == pastCards[pastCards.size() - 2]) {
+        if (pastCards[pastCards.size() - 1].value == pastCards[pastCards.size() - 2].value) {
             if (pastCards.size() >= 4
-                && pastCards[pastCards.size() - 2] == pastCards[pastCards.size() - 3]
-                && pastCards[pastCards.size() - 3] == pastCards[pastCards.size() - 4]) {
+                && pastCards[pastCards.size() - 2].value == pastCards[pastCards.size() - 3].value
+                && pastCards[pastCards.size() - 3].value == pastCards[pastCards.size() - 4].value) {
                 //4 of a kind
                 score += 12;
             }
             else if (pastCards.size() >= 3
-                && pastCards[pastCards.size() - 2] == pastCards[pastCards.size() - 3]) {
+                && pastCards[pastCards.size() - 2].value == pastCards[pastCards.size() - 3].value) {
                 //3 of a kind
                 score += 6;
             }
@@ -200,13 +187,13 @@ int Board::checkForPeggingPoints(vector<int> pastCards, int sum) {
         if (pastCards.size() >= 3) {
             vector<int> rowCheck;
             for (int i = 1; i < 4; i++) {
-                rowCheck.push_back(pastCards[pastCards.size() - i]);
+                rowCheck.push_back(pastCards[pastCards.size() - i].value);
             }
             if (inARow(rowCheck)) {
                 score += 3;
                 int counter = 4;
                 while (pastCards.size() >= counter && counter < 8) {
-                    rowCheck.push_back(pastCards[pastCards.size() - counter]);
+                    rowCheck.push_back(pastCards[pastCards.size() - counter].value);
                     if (inARow(rowCheck)) score++;
                 }
             }
@@ -216,51 +203,93 @@ int Board::checkForPeggingPoints(vector<int> pastCards, int sum) {
     if (sum == 15 || sum == 31) score += 2;
 
     return score;
-}
+}   
 
 void Board::printTable(vector<int> p1Scores, vector<int> p2Scores) {
-    cout << endl;
-    cout << endl;
+    ClearScreen();
+    cout << "Round Scores" << endl;
     cout << "------------------------------------------------------" << endl;
-    cout << "|Criteria  | Player 1            | Player 2    " << endl;
-    cout << "|----------|---------------------|--------------------"<< endl;
-    cout << "|Hand      | ";
-
-    cout << "Type    Suit        |  Type    Suit" << endl;
+    cout << "|Criteria  | Player 1            | Player 2          |" << endl;
+    cout << "|----------|---------------------|-------------------|" << endl;
+    cout << "|Hand      | Type    Suit        |  Type    Suit     |" << endl;
 
     for (int i = 0; i < player1->holdingHand.size(); i++) {
-        cout << "|          | " << player1->holdingHand[i] << "   |  " << player2->holdingHand[i] << endl;
+        cout << "|          | " << player1->holdingHand[i] << "   |  " << player2->holdingHand[i] << "|" << endl;
     }
-    cout << "|----------|---------------------|--------------------" << endl;
+    cout << "|----------|---------------------|-------------------|" << endl;
 
     cout << "|Scores    | ";
-    
-    cout << "15's:      " << p1Scores[0] << "        | " << "15's:      " << p2Scores[0] << endl;
-    cout << "|          | Runs:      " << p1Scores[1] << "        | " << "Runs:      " << p2Scores[1] << endl;
-    cout << "|          | Of a Kind: " << p1Scores[2] << "        | " << "Of a Kind: " << p2Scores[2] << endl;
-    cout << "|          | Nubs:      " << p1Scores[3] << "        | " << "Nubs:      " << p2Scores[3] << endl;
-    cout << "|----------|---------------------|--------------------" << endl;
+    cout << "15's:      " << wordCheck(p1Scores[0]) << "       | " << "15's:      " << wordCheck(p2Scores[0]) << "     |" << endl;
+    cout << "|          | Runs:      " << wordCheck(p1Scores[1]) << "       | " << "Runs:      " << wordCheck(p2Scores[1]) << "     |" << endl;
+    cout << "|          | Of a Kind: " << wordCheck(p1Scores[2]) << "       | " << "Of a Kind: " << wordCheck(p2Scores[2]) << "     |" << endl;
+    cout << "|          | Nubs:      " << wordCheck(p1Scores[3]) << "       | " << "Nubs:      " << wordCheck(p2Scores[3]) << "     |" << endl;
+    cout << "|----------|---------------------|-------------------|" << endl;
 
     int p1Total = (p1Scores[0] + p1Scores[1] + p1Scores[2] + p1Scores[3]);
     int p2Total = (p2Scores[0] + p2Scores[1] + p2Scores[2] + p2Scores[3]);
 
-    cout << "|Total     | " << p1Total;
-    if(p1Total < 10) cout << " ";
-
-    cout << "                  | " << p2Total << endl;
-   // cout << "|          | Total:     " << (p1Scores[0] + p1Scores[1] + p1Scores[2] + p1Scores[3]) << "        | " 
-   //      << "Total:     " << (p2Scores[0] + p2Scores[1] + p2Scores[2] + p2Scores[3]) << endl;
+    cout << "|Total     | " << wordCheck(p1Total) << "                  | " << wordCheck(p2Total) << "                |" << endl;
     cout << "------------------------------------------------------" << endl;
+    cout << endl;
+    cout << "Press any key to continue.";
+    cin.get();
+    cin.get();
+}
+
+void Board::printRoundStart() {
+    ClearScreen();
+    cout << "Scores" << endl;
+    cout << "-------------------" << endl;
+    cout << "| Player 1    ";
+    cout << ((player1->getScore() > 99) ? to_string(player1->getScore()) : (player1->getScore() > 9)
+        ? to_string(player1->getScore()) + " " : to_string(player1->getScore()) + "  ");
+    cout << " |" << endl;
+
+    cout << "| Player 2    ";
+    cout << ((player2->getScore() > 99) ? to_string(player2->getScore()) : (player2->getScore() > 9)
+        ? to_string(player2->getScore()) + " " : to_string(player2->getScore()) + "  ");
+    cout << " |" << endl;
+    cout << "-------------------" << endl;
     cout << endl;
 }
 
-ostream& print(ostream& out, const int num) {
-    if (num < 10) out << num << " ";
-    out << num;
-    return out;
+string wordCheck(int num) {
+    return (num < 10 ) ? (to_string(num) + " ") : to_string(num);
 }
 
-string wordCheck(int num) {
-    if(num < 10 ) return num + " ";
-    return num + "";
+void ClearScreen()
+{
+    HANDLE                     hStdOut;
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    DWORD                      count;
+    DWORD                      cellCount;
+    COORD                      homeCoords = { 0, 0 };
+
+    hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hStdOut == INVALID_HANDLE_VALUE) return;
+
+    /* Get the number of cells in the current buffer */
+    if (!GetConsoleScreenBufferInfo(hStdOut, &csbi)) return;
+    cellCount = csbi.dwSize.X *csbi.dwSize.Y;
+
+    /* Fill the entire buffer with spaces */
+    if (!FillConsoleOutputCharacter(
+        hStdOut,
+        (TCHAR) ' ',
+        cellCount,
+        homeCoords,
+        &count
+    )) return;
+
+    /* Fill the entire buffer with the current colors and attributes */
+    if (!FillConsoleOutputAttribute(
+        hStdOut,
+        csbi.wAttributes,
+        cellCount,
+        homeCoords,
+        &count
+    )) return;
+
+    /* Move the cursor home */
+    SetConsoleCursorPosition(hStdOut, homeCoords);
 }

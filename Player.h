@@ -4,7 +4,7 @@
 class Player {
 
 public:
-    virtual Card playCard(int turn) = 0;
+    virtual Card playCard(vector<Card> pastCards, int turn) = 0;
     virtual vector<Card> getCribCards(bool turn) = 0;
 
     int getScore() { return score; }

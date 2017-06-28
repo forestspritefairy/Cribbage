@@ -1,9 +1,11 @@
+#pragma once
 #include <iostream>
 #include "Human.h"
+#include "Board.h"
 
 using namespace std;
 
-Card Human::playCard(int sum) {
+Card Human::playCard(vector<Card> pastCards, int sum) {
     int input;
     if (playingHand.size() == 0) {
         return Card();
@@ -12,12 +14,10 @@ Card Human::playCard(int sum) {
         return Card();
     }
     while(true) {
-        cout << "The Current Sum is " << sum << endl;
-        cout << "Your Cards are" << endl;
-        printCards(playingHand);
-        cout << "Enter a number representing the index of the card you want.";
-    
+        printPegging(pastCards, sum);
+
         cin >> input;
+        cout << endl;
         if (input >= 0 && input < playingHand.size() && playingHand[input].value + sum < 31) {
             break;
         }
@@ -25,6 +25,24 @@ Card Human::playCard(int sum) {
     Card choice = playingHand[input];
     playingHand.erase(playingHand.begin() + input);
     return choice;
+}
+
+void Human::printPegging(vector<Card> pastCards, int sum) {
+    ClearScreen();
+
+    cout << "Pegging" << endl;
+    cout << "------------------------" << endl;
+    for (int i = pastCards.size() - 1; i >= 0; i--) {
+        cout << "| " << pastCards[i] << "    |" << endl;
+    }
+    cout << "|----------------------|" << endl;
+    cout << "| Sum  " << wordCheck(sum) << "              |" << endl;
+    cout << "------------------------" << endl;
+    cout << endl;
+
+    printCards(playingHand);
+
+    cout << "Enter card index to play: ";
 }
 
 vector<Card> Human::getCribCards(bool turn) {
@@ -37,10 +55,10 @@ vector<Card> Human::getCribCards(bool turn) {
         else {
             cout << "It is currently not your crib." << endl;
         }
-        cout << "Your cards are" << endl;
+        cout << endl;
         printCards(holdingHand);
         cout << "Enter two numbers representing the indexes of" << endl;
-        cout << "the cards you want to remove." << endl;
+        cout << "the cards you want to place in the crib." << endl;
 
         cin >> in1;
         cin >> in2;

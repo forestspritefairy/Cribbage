@@ -4,6 +4,6 @@
 class Computer : public Player {
 
 public:
-    Card playCard(int turn);
+    Card playCard(vector<Card> pastCards, int turn);
     vector<Card> getCribCards(bool turn);
 };
