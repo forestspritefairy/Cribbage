@@ -6,17 +6,27 @@ class Player {
 public:
     virtual Card playCard(vector<Card> pastCards, int turn) = 0;
     virtual vector<Card> getCribCards(bool turn) = 0;
+    virtual void setName(char* name, int length) = 0;
+    virtual char* getName() = 0;
+    virtual int getNameLength() = 0;
 
+    //friend ostream& operator<<(ostream& out, Player& p) {
+    //    p.print(out);
+    //    return out;
+    //}
+    virtual void print() = 0;
     int getScore() { return score; }
     
     void resetHand(vector<Card> *newHand);
     void addScore(int newScore) { score += newScore; }
+    
 
     vector<Card> holdingHand;
     vector<Card> playingHand;
+    int score;
 
 private:
-    int score;
+    
 };
 
 vector<int> calculateHandScore(vector<Card> hand, Card cut);

@@ -63,6 +63,7 @@ private:
     int checkForPeggingPoints(vector<Card> pastCards, int sum);
     void printTable(vector<int> player1Scores, vector<int> player2Scores);
     void printRoundStart();
+    int intro();
 
     Deck *deck;
     Player *player1;

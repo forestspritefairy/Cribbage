@@ -1,4 +1,5 @@
 #include "Computer.h"
+#include <string>
 
 Card Computer::playCard(vector<Card> pastCards, int sum) {
     for (int i = 0; i < playingHand.size(); i++) {
@@ -22,4 +23,21 @@ vector<Card> Computer::getCribCards(bool turn) {
 
     playingHand = holdingHand;
     return cribCards;
+}
+
+void Computer::setName(char * name, int length) {
+}
+
+char * Computer::getName() {
+    return name;
+}
+
+int Computer::getNameLength() {
+    return 8;
+}
+
+void Computer::print() {
+    cout << "Easy Bot   ";
+    cout << ((score > 99) ? to_string(score) : (score > 9)
+        ? to_string(score) + " " : to_string(score) + "  ");
 }

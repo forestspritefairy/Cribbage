@@ -18,9 +18,10 @@ int main() {
 }
 
 Board::Board() {
-    deck = new Deck();
     player1 = new Human();
+    int difficulty = intro();
     player2 = new Computer();
+    deck = new Deck();
 }
 
 bool Board::hasWon() {
@@ -156,7 +157,6 @@ bool Board::inARow(vector<int> v) {
     sort(v.begin(), v.end());
     for (int i = 1; i < v.size(); i++) 
         if (v[i - 1] + 1 != v[i]) return false;
-
     return true;
 }
 
@@ -240,17 +240,50 @@ void Board::printRoundStart() {
     ClearScreen();
     cout << "Scores" << endl;
     cout << "-------------------" << endl;
-    cout << "| Player 1    ";
-    cout << ((player1->getScore() > 99) ? to_string(player1->getScore()) : (player1->getScore() > 9)
-        ? to_string(player1->getScore()) + " " : to_string(player1->getScore()) + "  ");
-    cout << " |" << endl;
-
-    cout << "| Player 2    ";
-    cout << ((player2->getScore() > 99) ? to_string(player2->getScore()) : (player2->getScore() > 9)
-        ? to_string(player2->getScore()) + " " : to_string(player2->getScore()) + "  ");
-    cout << " |" << endl;
+    cout << "| ";
+    player1->print();
+    cout << "  |" << endl;
+    cout << "| ";
+    player2->print();
+    cout << "  |" << endl;
     cout << "-------------------" << endl;
     cout << endl;
+}
+
+int Board::intro() {
+    cout << "--------------------------------" << endl;
+    cout << "*                              *" << endl;
+    cout << "*   Welcome to text Cribbage   *" << endl;
+    cout << "*                              *" << endl;
+    cout << "--------------------------------" << endl;
+    cout << endl;
+    cout << "Enter your name: ";
+
+    char* playerName = new char[10];
+    int i = 0;
+    char in;
+    for (in = cin.get(); (in != '\n' && in != '\r' && i < 10); in = cin.get(), i++) {
+        playerName[i] = in;
+    }
+    
+    if (i == 10 && in != '\n' && in != '\r') {
+        cin.ignore(10000, '\n');
+    }
+    player1->setName(playerName, i);
+
+    int diffChoice = 3;
+    while(diffChoice > 2 || diffChoice < 0) {
+        ClearScreen();
+        cout << "Next choose a number representing " << endl;
+        cout << "the difficulty of the computer." << endl;
+        cout << "Easy : 0" << endl;
+        cout << "Medium : 1" << endl;
+        cout << "Hard : 2" << endl;
+        cout << "Difficulty: ";
+        cin >> diffChoice;
+    }
+
+    return diffChoice;
 }
 
 string wordCheck(int num) {
