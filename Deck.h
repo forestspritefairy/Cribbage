@@ -4,7 +4,6 @@
 
 using namespace std;
 
-const int AMOUNT_OF_CARDS = 52;
 const int MAX_DECK_VALUE = 13;
 const int MAX_SUIT_VALUE = 4;
 

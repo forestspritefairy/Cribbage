@@ -13,6 +13,12 @@ Card Computer::playCard(vector<Card> pastCards, int sum) {
     return Card();
 }
 
+
+void Computer::resetHand(vector<Card> *newHand) {
+    holdingHand = *newHand;
+    playingHand = *newHand;
+}
+
 vector<Card> Computer::getCribCards(bool turn) {
     vector<Card> cribCards;
     cribCards.push_back(holdingHand.at(0));
@@ -23,17 +29,6 @@ vector<Card> Computer::getCribCards(bool turn) {
 
     playingHand = holdingHand;
     return cribCards;
-}
-
-void Computer::setName(char * name, int length) {
-}
-
-char * Computer::getName() {
-    return name;
-}
-
-int Computer::getNameLength() {
-    return 8;
 }
 
 void Computer::print() {

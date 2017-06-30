@@ -4,14 +4,20 @@
 class Computer : public Player {
 
 public:
-    Card playCard(vector<Card> pastCards, int turn);
+    const string BOTNAME = "Easy Bot";
+
+    void addScore(int newScore) { score += newScore; }
+
     vector<Card> getCribCards(bool turn);
-    void setName(char* name, int length);
-    char* getName();
-    int getNameLength();
+    string getName() { return BOTNAME; }
+    vector<Card> getHoldingHand() { return holdingHand; }
+    int getScore() { return score; }
+    Card playCard(vector<Card> pastCards, int sum);
     void print();
+    void resetHand(vector<Card> *newHand);
 private:
     
-
-    char* name = "Easy Bot";
+    vector<Card> holdingHand;
+    vector<Card> playingHand;
+    int score;
 };

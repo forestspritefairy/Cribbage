@@ -1,33 +1,68 @@
+/*--------------------------------------------------------------------
+// file name:	Board.cpp
+// authors:     Ben Clark, Polina Eremenko
+// date:		06/25/2017
+// description: A representation of a Cribbage board. Controls the deck
+//              and Player classes. The play method acts as the driver for
+//              the program.
+// variables:	a bool representing if it is player1's turn or player2's
+//              turn. Deck that is in charge of dealing the cards and
+//              getting the cut for the board. Players 1 and 2 that
+//              are the players in the game. A vector that is the crib cards
+//--------------------------------------------------------------------*/
 #pragma once
-
 #include "Board.h"
 #include "Deck.h"
 #include "Computer.h"
 #include "Human.h"
-
 #include <vector>
 #include <algorithm>
 #include <iostream>
 #include <string>
 #include <windows.h>
+
 using namespace std;
 
+/*------------------------------------------------------------------
+// name:		main
+// description:	Starts the Game by making a Board and calling play.
+//----------------------------------------------------------------*/
 int main() {
     Board *b = new Board();
     b->play();
 }
 
+/*------------------------------------------------------------------
+// name:		Board
+// description:	The default constructor for the Board it sets the
+//              Players and deck.
+// parameters:	none
+// called by:	main
+//----------------------------------------------------------------*/
 Board::Board() {
-    player1 = new Human();
     int difficulty = intro();
     player2 = new Computer();
     deck = new Deck();
 }
 
+/*------------------------------------------------------------------
+// name:		hasWon
+// description:	check to see if either player has won the game.
+// parameters:	none
+// returns:		a bool that is true if someone has won.
+// called by:	play, pegging
+//----------------------------------------------------------------*/
 bool Board::hasWon() {
      return (player1->getScore() > 120 || player2->getScore() > 120);
 }
 
+/*------------------------------------------------------------------
+// name:		deal
+// description:	resets the players hands
+// parameters:	none
+// returns:		none
+// called by:	play
+//----------------------------------------------------------------*/
 void Board::deal() {
     vector<Card> cards1;
     vector<Card> cards2;
@@ -40,6 +75,14 @@ void Board::deal() {
     player2->resetHand(&cards2);
 }
 
+/*------------------------------------------------------------------
+// name:		play
+// description:	the driver for this program. It loops through the play
+//              of the game until one of the players has won the game.
+// parameters:	none
+// returns:		none
+// called by:	main
+//----------------------------------------------------------------*/
 void Board::play() {
     bool turn = true;
     while (true) {
@@ -57,8 +100,8 @@ void Board::play() {
         if (pegging(turn)) break;
 
         //Calculate the hand scores
-        vector<int> p1Score = calculateHandScore(player1->holdingHand, *cut);
-        vector<int> p2Score = calculateHandScore(player2->holdingHand, *cut);
+        vector<int> p1Score = calculateHandScore(player1->getHoldingHand(), *cut);
+        vector<int> p2Score = calculateHandScore(player2->getHoldingHand(), *cut);
 
         printTable(p1Score, p2Score);
 
@@ -97,6 +140,16 @@ void Board::play() {
     cin.get();
 }
 
+/*------------------------------------------------------------------
+// name:		pegging
+// description:	allows all the players to take turns pegging. This is
+//              done through a large while loops that tracks to see if
+//              all players have played their hands. It will give points
+//              to players who score points here.
+// parameters:	a bool representing who starts the pegging stage.
+// returns:		a bool that tells the play method if anyone has won.
+// called by:	play
+//----------------------------------------------------------------*/
 bool Board::pegging(bool turn) {
     int sum = 0;
     int player1CardsPlayed = 0;
@@ -153,6 +206,14 @@ bool Board::pegging(bool turn) {
     return false;
 }
 
+/*------------------------------------------------------------------
+// name:		inARow
+// description:	given a vector checks to see if that vecotor is all in
+//              a row that is each number is one larger then the previous.
+// parameters:	vector being checked.
+// returns:		bool that says wether or not the vector is in a row.
+// called by:	checkForPeggingPoints
+//----------------------------------------------------------------*/
 bool Board::inARow(vector<int> v) {
     sort(v.begin(), v.end());
     for (int i = 1; i < v.size(); i++) 
@@ -160,6 +221,16 @@ bool Board::inARow(vector<int> v) {
     return true;
 }
 
+/*------------------------------------------------------------------
+// name:		checkForPeggingPoints
+// description:	given a vector of cards and an int, checks to see if
+//              any points are awarded. Points can come from the vector
+//              containing same id Cards, cards in a row, nubs, or having
+//              sum equal to 15 / 31.
+// parameters:	vector of the past cards, int of the current sum.
+// returns:		int that is the number of points awarded.
+// called by:	pegging
+//----------------------------------------------------------------*/
 int Board::checkForPeggingPoints(vector<Card> pastCards, int sum) {
     int score = 0;
 
@@ -198,13 +269,22 @@ int Board::checkForPeggingPoints(vector<Card> pastCards, int sum) {
                 }
             }
         }
-
     }
     if (sum == 15 || sum == 31) score += 2;
 
     return score;
 }   
 
+/*------------------------------------------------------------------
+// name:		printTable
+// description:	prints the summary for the round. It clears the console
+//              screen, then prints a table that shows where points were
+//              given and the total points for each player.
+// parameters:	two vectors that are the information of where each player
+//              got points.
+// returns:		none.
+// called by:	play
+//----------------------------------------------------------------*/
 void Board::printTable(vector<int> p1Scores, vector<int> p2Scores) {
     ClearScreen();
     cout << "Round Scores" << endl;
@@ -213,8 +293,11 @@ void Board::printTable(vector<int> p1Scores, vector<int> p2Scores) {
     cout << "|----------|---------------------|-------------------|" << endl;
     cout << "|Hand      | Type    Suit        |  Type    Suit     |" << endl;
 
-    for (int i = 0; i < player1->holdingHand.size(); i++) {
-        cout << "|          | " << player1->holdingHand[i] << "   |  " << player2->holdingHand[i] << "|" << endl;
+    vector<Card> holdingHandP1 = player1->getHoldingHand();
+    vector<Card> holdingHandP2 = player2->getHoldingHand();
+
+    for (int i = 0; i < holdingHandP1.size(); i++) {
+        cout << "|          | " << holdingHandP1[i] << "   |  " << holdingHandP2[i] << "|" << endl;
     }
     cout << "|----------|---------------------|-------------------|" << endl;
 
@@ -236,6 +319,13 @@ void Board::printTable(vector<int> p1Scores, vector<int> p2Scores) {
     cin.get();
 }
 
+/*------------------------------------------------------------------
+// name:		printRoundStart
+// description:	prints the information for the players scores.
+// parameters:	none
+// returns:		none
+// called by:	play
+//----------------------------------------------------------------*/
 void Board::printRoundStart() {
     ClearScreen();
     cout << "Scores" << endl;
@@ -247,9 +337,18 @@ void Board::printRoundStart() {
     player2->print();
     cout << "  |" << endl;
     cout << "-------------------" << endl;
-    cout << endl;
+    cout << endl;   
 }
 
+/*------------------------------------------------------------------
+// name:		intro
+// description:	gives the player an intro to textcribbage. Prompts them
+//              to enter their name(only displays first 10 char) and
+//              the difficulty of the computer opponent.
+// parameters:	none
+// returns:		none
+// called by:	play
+//----------------------------------------------------------------*/
 int Board::intro() {
     cout << "--------------------------------" << endl;
     cout << "*                              *" << endl;
@@ -259,17 +358,18 @@ int Board::intro() {
     cout << endl;
     cout << "Enter your name: ";
 
-    char* playerName = new char[10];
+    string playerName;
     int i = 0;
     char in;
     for (in = cin.get(); (in != '\n' && in != '\r' && i < 10); in = cin.get(), i++) {
-        playerName[i] = in;
+        playerName.push_back(in);
     }
     
     if (i == 10 && in != '\n' && in != '\r') {
         cin.ignore(10000, '\n');
     }
-    player1->setName(playerName, i);
+
+    player1 = new Human(playerName);
 
     int diffChoice = 3;
     while(diffChoice > 2 || diffChoice < 0) {
@@ -286,12 +386,27 @@ int Board::intro() {
     return diffChoice;
 }
 
+/*------------------------------------------------------------------
+// name:		wordCheck
+// description:	takes in a num and formats it to take up two char spaces.
+//              that is if the number is less then 10 it adds a space after
+// parameters:	num to be formatted
+// returns:		string of the formatted number
+// called by:	printTable
+//----------------------------------------------------------------*/
 string wordCheck(int num) {
     return (num < 10 ) ? (to_string(num) + " ") : to_string(num);
 }
 
-void ClearScreen()
-{
+/*------------------------------------------------------------------
+// name:		ClearScreen
+// description:	Clears the console screen. ONLY FOR WINDOWS OPERATING
+//              SYSTEMS.
+// parameters:	none
+// returns:		none
+// called by:	Human::printPegging, intro, printTable, printRoundStart
+//----------------------------------------------------------------*/
+void ClearScreen() {
     HANDLE                     hStdOut;
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     DWORD                      count;

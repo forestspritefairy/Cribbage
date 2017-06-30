@@ -81,38 +81,12 @@ vector<Card> Human::getCribCards(bool turn) {
     return cribIn;
 }
 
-void Human::setName(char * name, int length) {
-    if (length > 10){
-        this->name = new char[10];
-        nameLength = 10;
-        length = 10;
-        for (int i = 0; i < length; i++) {
-            this->name[i] = name[i];
-        }
-    }
-    else {
-        this->name = name;
-        nameLength = length;
-    }
-}
-
-char * Human::getName() {
-    return name;
-}
-
-int Human::getNameLength()
-{
-    return nameLength;
-}
-
 void Human::print() {
-    char* name = this->getName();
-    int nameLength = this->getNameLength();
-    for (int i = 0; i < nameLength; i++) {
+    for (int i = 0; i < name.size(); i++) {
         cout << name[i];
     }
 
-    for (int i = nameLength; i <= 10; i++) {
+    for (int i = name.size(); i <= 10; i++) {
         cout << " ";
     }
     
@@ -129,3 +103,8 @@ bool Human::canPlay(int sum) {
     return false;
 }
 
+
+void Human::resetHand(vector<Card> *newHand) {
+    holdingHand = *newHand;
+    playingHand = *newHand;
+}

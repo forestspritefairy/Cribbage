@@ -5,11 +5,6 @@
 
 using namespace std;
 
-void Player::resetHand(vector<Card> *newHand) {
-    holdingHand = *newHand;
-    playingHand = *newHand;
-}
-
 vector<int> calculateHandScore(vector<Card> hand, Card cut) {
     vector<int> scores;
     vector<Card> fullHand = hand;
