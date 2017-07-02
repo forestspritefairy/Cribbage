@@ -8,39 +8,32 @@
 //--------------------------------------------------------------------*/
 
 #pragma once
-#include "Deck.h"
+#include "Card.h"
 #include <string>
+#include <vector>
+
+using namespace std;
 
 class Player {
 
 public:
     /*------------------------------------------------------------------
-    // name:		playCard
-    // description:	gives the player the past cards that have been played and
-    //              the rounds current sum. Wants the player to choose a Card
-    //              to play, if they can't play they return a default Card.
-    // parameters:	vector of cards that have been played, and int of current sum
-    // called by:	Board::pegging
+    // name:		addScore
+    // description:	adds points to the players score.
+    // parameters:	int of the number of points to be added.
+    // called by:	Board::play, Board::pegging
     //----------------------------------------------------------------*/
-    virtual Card playCard(vector<Card> pastCards, int sum) = 0;
+    virtual void addScore(int newScore) = 0;
 
     /*------------------------------------------------------------------
     // name:		getCribCards
     // description:	gives the player a bool that represents whether or not it
-    //              is their crib and asks them for a vector of cards to be 
+    //              is their crib and asks them for a vector of cards to be
     //              put in the crib.
     // parameters:	bool of whoes crib it is.
     // called by:	Board::play
     //----------------------------------------------------------------*/
     virtual vector<Card> getCribCards(bool turn) = 0;
-
-    /*------------------------------------------------------------------
-    // name:		getName
-    // description:	Gets the name of the player.
-    // parameters:	none
-    // called by:	print
-    //----------------------------------------------------------------*/
-    virtual string getName() = 0;
 
     /*------------------------------------------------------------------
     // name:		getHoldingHand
@@ -51,12 +44,30 @@ public:
     virtual vector<Card> getHoldingHand() = 0;
 
     /*------------------------------------------------------------------
+    // name:		getName
+    // description:	Gets the name of the player.
+    // parameters:	none
+    // called by:	print
+    //----------------------------------------------------------------*/
+    virtual string getName() = 0;
+
+    /*------------------------------------------------------------------
     // name:		getScore
     // description:	gets the players current score
     // parameters:	none
     // called by:	Board::hasWon, Board::play
     //----------------------------------------------------------------*/
     virtual int getScore() = 0;
+
+    /*------------------------------------------------------------------
+    // name:		playCard
+    // description:	gives the player the past cards that have been played and
+    //              the rounds current sum. Wants the player to choose a Card
+    //              to play, if they can't play they return a default Card.
+    // parameters:	vector of cards that have been played, and int of current sum
+    // called by:	Board::pegging
+    //----------------------------------------------------------------*/
+    virtual Card playCard(vector<Card> pastCards, int sum) = 0;
 
     /*------------------------------------------------------------------
     // name:		print
@@ -73,15 +84,6 @@ public:
     // called by:	Board::deal
     //----------------------------------------------------------------*/
     virtual void resetHand(vector<Card> *newHand) = 0;
-
-    /*------------------------------------------------------------------
-    // name:		addScore
-    // description:	adds points to the players score.
-    // parameters:	int of the number of points to be added.
-    // called by:	Board::play, Board::pegging
-    //----------------------------------------------------------------*/
-    virtual void addScore(int newScore) = 0;
-    
 };
 
 /*------------------------------------------------------------------
@@ -96,6 +98,16 @@ public:
 vector<int> calculateHandScore(vector<Card> hand, Card cut);
 
 /*------------------------------------------------------------------
+// name:		find15
+// description:	helper method for score15
+// parameters:	A vector of Cards, the current index in the array we are
+//              at. The current sum that has been scored, and the amount
+//              of points they have recived.
+// called by:	score15
+//----------------------------------------------------------------*/
+int find15(const vector<Card> numbers, int index, int sum, int score);
+
+/*------------------------------------------------------------------
 // name:		score15
 // description:	given a hand calculates the number of points earned from 15's.
 // parameters:	vector of Cards that is the hand to be scored.
@@ -104,22 +116,13 @@ vector<int> calculateHandScore(vector<Card> hand, Card cut);
 int score15(const vector<Card> hand);
 
 /*------------------------------------------------------------------
-// name:		scoreRuns
-// description:	given a hand of Cards calculates the number of points earned
-//              from runs.
-// parameters:	vector of cards that is the hand to be scored.
+// name:		scoreflush
+// description:	given a hand of Cards and a cut calculates the number of
+//              points earned from a flush.
+// parameters:	vector of cards and cut to be scored.
 // called by:	calculateHandScore
 //----------------------------------------------------------------*/
-int scoreRuns(vector<Card> hand);
-
-/*------------------------------------------------------------------
-// name:		scoreOfAKind
-// description:	given a hand of Cards calculates the number of points earned
-//              from pairs, 3 of a kind, and 4 of a kind.
-// parameters:	vector of cards that is the hand to be scored.
-// called by:	calculateHandScore, scoreRuns
-//----------------------------------------------------------------*/
-int scoreOfAKind(vector<Card> hand);
+int scoreFlush(const vector<Card> hand, Card cut);
 
 /*------------------------------------------------------------------
 // name:		scoreNubs
@@ -131,14 +134,22 @@ int scoreOfAKind(vector<Card> hand);
 int scoreNubs(const vector<Card> hand, Card cut);
 
 /*------------------------------------------------------------------
-// name:		find15
-// description:	helper method for score15
-// parameters:	A vector of Cards, the current index in the array we are
-//              at. The current sum that has been scored, and the amount
-//              of points they have recived.
-// called by:	score15
+// name:		scoreOfAKind
+// description:	given a hand of Cards calculates the number of points earned
+//              from pairs, 3 of a kind, and 4 of a kind.
+// parameters:	vector of cards that is the hand to be scored.
+// called by:	calculateHandScore, scoreRuns
 //----------------------------------------------------------------*/
-int find15(const vector<Card> numbers, int index, int sum, int score);
+int scoreOfAKind(vector<Card> hand);
+
+/*------------------------------------------------------------------
+// name:		scoreRuns
+// description:	given a hand of Cards calculates the number of points earned
+//              from runs.
+// parameters:	vector of cards that is the hand to be scored.
+// called by:	calculateHandScore
+//----------------------------------------------------------------*/
+int scoreRuns(vector<Card> hand);
 
 /*------------------------------------------------------------------
 // name:		sort

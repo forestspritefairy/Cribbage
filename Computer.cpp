@@ -53,17 +53,6 @@ Card Computer::playCard(vector<Card> pastCards, int sum) {
 }
 
 /*------------------------------------------------------------------
-// name:		resetHand
-// description:	resets the computer's hand by giving them a new vector.
-// parameters:	vector of Cards that is the players new hand.
-// called by:	Board::deal
-//----------------------------------------------------------------*/
-void Computer::resetHand(vector<Card> *newHand) {
-    holdingHand = *newHand;
-    playingHand = *newHand;
-}
-
-/*------------------------------------------------------------------
 // name:		print
 // description:	prints the name of the computer and their score.
 // parameters:	none
@@ -73,4 +62,16 @@ void Computer::print() {
     cout << "Easy Bot   ";
     cout << ((score > 99) ? to_string(score) : (score > 9)
         ? to_string(score) + " " : to_string(score) + "  ");
+}
+
+
+/*------------------------------------------------------------------
+// name:		resetHand
+// description:	resets the computer's hand by giving them a new vector.
+// parameters:	vector of Cards that is the players new hand.
+// called by:	Board::deal
+//----------------------------------------------------------------*/
+void Computer::resetHand(vector<Card> *newHand) {
+    holdingHand = *newHand;
+    playingHand = *newHand;
 }

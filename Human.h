@@ -25,6 +25,14 @@ public:
     Human(string name) { this->name = name; }
 
     /*------------------------------------------------------------------
+    // name:		addScore
+    // description:	adds points to the players score.
+    // parameters:	int of the number of points to be added.
+    // called by:	Board::play, Board::pegging
+    //----------------------------------------------------------------*/
+    void addScore(int newScore) { score += newScore; }
+
+    /*------------------------------------------------------------------
     // name:		getCribCards
     // description:	given a bool that tells the player whether or not it
     //              is their turn prompts the human to give two cards to
@@ -36,20 +44,20 @@ public:
     vector<Card> getCribCards(bool turn);
 
     /*------------------------------------------------------------------
-    // name:		getName
-    // description:	Gets the name of the player.
-    // parameters:	none
-    // called by:	print
-    //----------------------------------------------------------------*/
-    string getName() { return name; }
-
-    /*------------------------------------------------------------------
     // name:		getHoldingHand
     // description:	gets the holdingHand from the player.
     // parameters:	none
     // called by:	Board::play
     //----------------------------------------------------------------*/
     vector<Card> getHoldingHand() { return holdingHand; }
+
+    /*------------------------------------------------------------------
+    // name:		getName
+    // description:	Gets the name of the player.
+    // parameters:	none
+    // called by:	print
+    //----------------------------------------------------------------*/
+    string getName() { return name; }
 
     /*------------------------------------------------------------------
     // name:		getScore
@@ -85,27 +93,11 @@ public:
     //----------------------------------------------------------------*/
     void resetHand(vector<Card> *newHand);
 
-    /*------------------------------------------------------------------
-    // name:		addScore
-    // description:	adds points to the players score.
-    // parameters:	int of the number of points to be added.
-    // called by:	Board::play, Board::pegging
-    //----------------------------------------------------------------*/
-    void addScore(int newScore) { score += newScore; }
-
 private:
     string name;
     vector<Card> holdingHand;
     vector<Card> playingHand;
     int score;
-
-    /*------------------------------------------------------------------
-    // name:		printCards
-    // description:	makes a table of all the cards in the vector.
-    // parameters:	vector of cards to be outputted.
-    // called by:	printPegging, getCribCard
-    //----------------------------------------------------------------*/
-    void printCards(const vector<Card> v);
 
     /*------------------------------------------------------------------
     // name:		canPlay
@@ -116,6 +108,14 @@ private:
     // called by:	playCard
     //----------------------------------------------------------------*/
     bool canPlay(int sum);
+
+    /*------------------------------------------------------------------
+    // name:		printCards
+    // description:	makes a table of all the cards in the vector.
+    // parameters:	vector of cards to be outputted.
+    // called by:	printPegging, getCribCard
+    //----------------------------------------------------------------*/
+    void printCards(const vector<Card> v);
 
     /*------------------------------------------------------------------
     // name:		printPegging

@@ -15,22 +15,15 @@
 struct Card {
     /*------------------------------------------------------------------
     // name:		Card
-    // description:	default constructor for card. Sets everything to 0.
-    // parameters:	none
-    // called by:	Human::playCard, Computer::playCard
-    //----------------------------------------------------------------*/
-    Card();
-
-    /*------------------------------------------------------------------
-    // name:		Card
     // description:	overload constructor that takes in the Cards id and suit
-    //              then calculates the value from those.
+    //              then calculates the value from those, if id or suit are not
+    //              enteredt they default to 0.
     // parameters:	int id and int suit that are going to become those values
     //              in Card.
     // returns:		none
-    // called by:	Deck::Deck, Deck::resetHand
+    // called by:	Deck::Deck, Deck::resetHand,Human::playCard, Computer::playCard
     //----------------------------------------------------------------*/
-    Card(int id, int s);
+    Card(int id = 0, int s = 0) : id(id), suit(s), value((id < 10) ? id : 10) {};
 
     /*------------------------------------------------------------------
     // name:		operator>

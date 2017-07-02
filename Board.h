@@ -14,6 +14,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "Deck.h"
 #include "Player.h"
 
 class Board {
@@ -38,47 +39,6 @@ public:
     void play();
 
 private:
-
-    /*------------------------------------------------------------------
-    // name:		hasWon
-    // description:	check to see if either player has won the game.
-    // parameters:	none
-    // returns:		a bool that is true if someone has won.
-    // called by:	play, pegging
-    //----------------------------------------------------------------*/
-    bool hasWon();
-
-    /*------------------------------------------------------------------
-    // name:		deal
-    // description:	resets the players hands 
-    // parameters:	none
-    // returns:		none
-    // called by:	play
-    //----------------------------------------------------------------*/
-    void deal();
-
-    /*------------------------------------------------------------------
-    // name:		pegging
-    // description:	allows all the players to take turns pegging. This is
-    //              done through a large while loops that tracks to see if
-    //              all players have played their hands. It will give points
-    //              to players who score points here.
-    // parameters:	a bool representing who starts the pegging stage.
-    // returns:		a bool that tells the play method if anyone has won.
-    // called by:	play
-    //----------------------------------------------------------------*/
-    bool pegging(bool turn);
-
-    /*------------------------------------------------------------------
-    // name:		inARow
-    // description:	given a vector checks to see if that vecotor is all in
-    //              a row that is each number is one larger then the previous.
-    // parameters:	vector being checked.
-    // returns:		bool that says wether or not the vector is in a row.
-    // called by:	checkForPeggingPoints
-    //----------------------------------------------------------------*/
-    bool inARow(vector<int> v);
-    
     /*------------------------------------------------------------------
     // name:		checkForPeggingPoints
     // description:	given a vector of cards and an int, checks to see if
@@ -92,6 +52,46 @@ private:
     int checkForPeggingPoints(vector<Card> pastCards, int sum);
 
     /*------------------------------------------------------------------
+    // name:		deal
+    // description:	resets the players hands
+    // parameters:	none
+    // returns:		none
+    // called by:	play
+    //----------------------------------------------------------------*/
+    void deal();
+
+    /*------------------------------------------------------------------
+    // name:		hasWon
+    // description:	check to see if either player has won the game.
+    // parameters:	none
+    // returns:		a bool that is true if someone has won.
+    // called by:	play, pegging
+    //----------------------------------------------------------------*/
+    bool hasWon();
+
+    /*------------------------------------------------------------------
+    // name:		inARow
+    // description:	given a vector checks to see if that vecotor is all in
+    //              a row that is each number is one larger then the previous.
+    // parameters:	vector being checked.
+    // returns:		bool that says wether or not the vector is in a row.
+    // called by:	checkForPeggingPoints
+    //----------------------------------------------------------------*/
+    bool inARow(vector<int> v);
+
+    /*------------------------------------------------------------------
+    // name:		pegging
+    // description:	allows all the players to take turns pegging. This is
+    //              done through a large while loops that tracks to see if
+    //              all players have played their hands. It will give points
+    //              to players who score points here.
+    // parameters:	a bool representing who starts the pegging stage.
+    // returns:		a bool that tells the play method if anyone has won.
+    // called by:	play
+    //----------------------------------------------------------------*/
+    bool pegging(bool turn, vector<int> &p1, vector<int> &p2);
+
+    /*------------------------------------------------------------------
     // name:		printTable
     // description:	prints the summary for the round. It clears the console
     //              screen, then prints a table that shows where points were
@@ -101,42 +101,12 @@ private:
     // returns:		none.
     // called by:	play
     //----------------------------------------------------------------*/
-    void printTable(vector<int> player1Scores, vector<int> player2Scores);
-
-    /*------------------------------------------------------------------
-    // name:		printRoundStart
-    // description:	prints the information for the players scores.
-    // parameters:	none
-    // returns:		none
-    // called by:	play
-    //----------------------------------------------------------------*/
-    void printRoundStart();
-
-    /*------------------------------------------------------------------
-    // name:		intro
-    // description:	gives the player an intro to textcribbage. Prompts them
-    //              to enter their name(only displays first 10 char) and
-    //              the difficulty of the computer opponent.
-    // parameters:	none
-    // returns:		none
-    // called by:	play
-    //----------------------------------------------------------------*/
-    int intro();
+    void printTable(vector<int> player1Scores, vector<int> player2Scores, Card cut);
 
     Deck *deck;
     Player *player1;
     Player *player2;
 };
-
-/*------------------------------------------------------------------
-// name:		wordCheck
-// description:	takes in a num and formats it to take up two char spaces.
-//              that is if the number is less then 10 it adds a space after
-// parameters:	num to be formatted
-// returns:		string of the formatted number
-// called by:	printTable
-//----------------------------------------------------------------*/
-string wordCheck(int num);
 
 /*------------------------------------------------------------------
 // name:		ClearScreen
@@ -147,3 +117,13 @@ string wordCheck(int num);
 // called by:	Human::printPegging, intro, printTable, printRoundStart
 //----------------------------------------------------------------*/
 void ClearScreen();
+
+/*------------------------------------------------------------------
+// name:		format
+// description:	takes in a num and formats it to take up two char spaces.
+//              that is if the number is less then 10 it adds a space after
+// parameters:	num to be formatted
+// returns:		string of the formatted number
+// called by:	printTable
+//----------------------------------------------------------------*/
+string format(int num);

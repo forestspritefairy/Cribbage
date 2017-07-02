@@ -13,33 +13,6 @@
 #include "Card.h"
 
 /*------------------------------------------------------------------
-// name:		Card
-// description:	default constructor for card. Sets everything to 0.
-// parameters:	none
-// called by:	Human::playCard, Computer::playCard
-//----------------------------------------------------------------*/
-Card::Card() {
-    id = 0;
-    suit = 0;
-    value = 0;
-}
-
-/*------------------------------------------------------------------
-// name:		Card
-// description:	overload constructor that takes in the Cards id and suit
-//              then calculates the value from those.
-// parameters:	int id and int suit that are going to become those values
-//              in Card.
-// returns:		none
-// called by:	Deck::Deck, Deck::resetHand
-//----------------------------------------------------------------*/
-Card::Card(int id, int s) {
-    this->id = id;
-    suit = s;
-    value = (id < 10) ? id : 10;
-}
-
-/*------------------------------------------------------------------
 // name:		operator<<
 // description:	Gives a standard output form for Card.
 // parameters:	the outstream that card is printed to and the Card to

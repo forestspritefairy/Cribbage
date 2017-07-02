@@ -37,20 +37,20 @@ public:
     vector<Card> getCribCards(bool turn);
 
     /*------------------------------------------------------------------
-    // name:		getName
-    // description:	Gets the name of the Computer.
-    // parameters:	none
-    // called by:	print
-    //----------------------------------------------------------------*/
-    string getName() { return BOTNAME; }
-
-    /*------------------------------------------------------------------
     // name:		getHoldingHand
     // description:	gets the hand from the computer.
     // parameters:	none
     // called by:	Board::play
     //----------------------------------------------------------------*/
     vector<Card> getHoldingHand() { return holdingHand; }
+
+    /*------------------------------------------------------------------
+    // name:		getName
+    // description:	Gets the name of the Computer.
+    // parameters:	none
+    // called by:	print
+    //----------------------------------------------------------------*/
+    string getName() { return BOTNAME; }
 
     /*------------------------------------------------------------------
     // name:		getScore
@@ -85,7 +85,6 @@ public:
     //----------------------------------------------------------------*/
     void resetHand(vector<Card> *newHand);
 private:
-    
     vector<Card> holdingHand;
     vector<Card> playingHand;
     int score;
