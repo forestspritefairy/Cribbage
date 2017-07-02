@@ -94,7 +94,7 @@ void Board::play() {
         vector<Card> cards2 = player2->getCribCards(turn);
         crib.insert(crib.end(), cards2.begin(), cards2.end());
 
-        Card *cut = &deck->cut();
+        Card *cut = &deck->draw();
         
         //If pegging returns true someone won the game.
         if (pegging(turn)) break;
@@ -158,6 +158,9 @@ bool Board::pegging(bool turn) {
     bool passTrack = false;
     vector<Card> pastCards;
 
+    int compPrevScore = 0;
+    int playerPrevScore = 0;
+
     while (player1CardsPlayed < 4 || player2CardsPlayed < 4) {
         //Player whoes turn it is plays a card.
         //If the value is 0 they could not play.
@@ -168,21 +171,31 @@ bool Board::pegging(bool turn) {
                 player2CardsPlayed++;
             }
         } else {
-            
+            ClearScreen();
+            if(compPrevScore > 0) {
+                cout << player1->getName() << " earned " << compPrevScore << " points." << endl << endl;
+                compPrevScore = 0;
+            }
+            if (playerPrevScore > 0) {
+                cout << "You earned " << playerPrevScore << " points." << endl << endl;
+                playerPrevScore = 0;
+            }
+
             play = player1->playCard(pastCards, sum);
             if(play.id != 0) {
                 player1CardsPlayed++;
             }
         }
 
-        //If the payer could not play tell the program that they passed.
+        //If the player could not play tell the program that they passed.
         //If the other player had already passed then reset the sum and replay
+        int score = 0;
         if (play.id == 0) {
             if (passTrack) {
                 sum = 0;
                 pastCards.clear();
-                if (playTurn) player2->addScore(1);
-                else player1->addScore(1);
+                score++;
+                
             } else passTrack = true;
         //If they could play figure out if they got any points.
         } else {
@@ -190,12 +203,16 @@ bool Board::pegging(bool turn) {
             sum+= play.value;
             pastCards.push_back(play);
             
-            int score = checkForPeggingPoints(pastCards, sum);
-
-            if (playTurn) player2->addScore(score);
-            else player1->addScore(score);
+            score = checkForPeggingPoints(pastCards, sum);
         }
-
+        if (playTurn) {
+            player2->addScore(score);
+            compPrevScore += score;
+        }
+        else {
+            player1->addScore(score);
+            playerPrevScore += score;
+        }
         //Check if the person who played has won the game.
         if (hasWon()) {
             return true;
@@ -364,14 +381,10 @@ int Board::intro() {
     for (in = cin.get(); (in != '\n' && in != '\r' && i < 10); in = cin.get(), i++) {
         playerName.push_back(in);
     }
-    
-    if (i == 10 && in != '\n' && in != '\r') {
-        cin.ignore(10000, '\n');
-    }
 
     player1 = new Human(playerName);
 
-    int diffChoice = 3;
+    char diffChoice = 3;
     while(diffChoice > 2 || diffChoice < 0) {
         ClearScreen();
         cout << "Next choose a number representing " << endl;
@@ -380,7 +393,8 @@ int Board::intro() {
         cout << "Medium : 1" << endl;
         cout << "Hard : 2" << endl;
         cout << "Difficulty: ";
-        cin >> diffChoice;
+        cin >> diffChoice;  
+        diffChoice -= 48;
     }
 
     return diffChoice;
@@ -407,6 +421,8 @@ string wordCheck(int num) {
 // called by:	Human::printPegging, intro, printTable, printRoundStart
 //----------------------------------------------------------------*/
 void ClearScreen() {
+    cin.ignore(cin.rdbuf()->in_avail(), '\n');
+
     HANDLE                     hStdOut;
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     DWORD                      count;
