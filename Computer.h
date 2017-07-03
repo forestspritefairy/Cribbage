@@ -27,6 +27,16 @@ public:
     void addScore(int newScore) { if(newScore > 0) score += newScore; }
 
     /*------------------------------------------------------------------
+    // name:		canPlay
+    // description:	checks to see if the player can play a card given
+    //              what they have left in their playingHand and the current
+    //              sum.
+    // parameters:	int of the current pegging sum
+    // called by:	playCard
+    //----------------------------------------------------------------*/
+    bool canPlay(int sum);
+
+    /*------------------------------------------------------------------
     // name:		getCribCards
     // description:	gives the computer a bool that represents whether or not it
     //              is their crib and asks them for a vector of cards to be
@@ -43,6 +53,7 @@ public:
     // called by:	Board::play
     //----------------------------------------------------------------*/
     vector<Card> getHoldingHand() { return holdingHand; }
+    vector<Card> getPlayingHand() { return playingHand; }
 
     /*------------------------------------------------------------------
     // name:		getName

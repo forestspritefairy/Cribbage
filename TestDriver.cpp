@@ -115,10 +115,11 @@ void pairTests() {
 // called by:	main
 //----------------------------------------------------------------*/
 void runTests() {
+    ClearScreen();
     cout << "//////////////////////////////////////" << endl;
     cout << "              Runs Tests              " << endl;
     cout << "//////////////////////////////////////" << endl << endl;
-    ClearScreen();
+    
     Deck *deck = new Deck();
 
     //Run of 3
@@ -203,10 +204,11 @@ void runTests() {
 // called by:	main
 //----------------------------------------------------------------*/
 void fifteenTests() {
+    ClearScreen();
     cout << "//////////////////////////////////////" << endl;
     cout << "              15s  Tests              " << endl;
     cout << "//////////////////////////////////////" << endl << endl;
-    ClearScreen();
+    
     Deck *deck = new Deck();
 
     //3 fives and a 10
@@ -247,8 +249,8 @@ void fifteenTests() {
 // name:		main
 // description:	The main for a simple testing class.
 //----------------------------------------------------------------*/
-int main() {
+/*int main() {
     pairTests();
     runTests();
     fifteenTests();
-}
+}*/

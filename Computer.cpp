@@ -14,6 +14,23 @@
 #include <string>
 
 /*------------------------------------------------------------------
+// name:		canPlay
+// description:	checks to see if the player can play a card given
+//              what they have left in their playingHand and the current
+//              sum.
+// parameters:	int of the current pegging sum
+// called by:	playCard
+//----------------------------------------------------------------*/
+bool Computer::canPlay(int sum) {
+    for (int i = 0; i < playingHand.size(); i++) {
+        if (playingHand[i].value + sum <= 31) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/*------------------------------------------------------------------
 // name:		getCribCards
 // description:	gives the computer a bool that represents whether or not it
 //              is their crib and asks them for a vector of cards to be

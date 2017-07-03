@@ -101,7 +101,7 @@ Card Human::playCard(vector<Card> pastCards, int sum) {
         cin >> input;
         input -= 48;
         cout << endl;
-        if (input >= 0 && input < playingHand.size() && playingHand[input].value + sum < 31) {
+        if (input >= 0 && input < playingHand.size() && playingHand[input].value + sum <= 31) {
             break;
         }
         ClearScreen();

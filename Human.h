@@ -33,6 +33,16 @@ public:
     void addScore(int newScore) { score += newScore; }
 
     /*------------------------------------------------------------------
+    // name:		canPlay
+    // description:	checks to see if the player can play a card given
+    //              what they have left in their playingHand and the current
+    //              sum.
+    // parameters:	int of the current pegging sum
+    // called by:	playCard
+    //----------------------------------------------------------------*/
+    bool canPlay(int sum);
+
+    /*------------------------------------------------------------------
     // name:		getCribCards
     // description:	given a bool that tells the player whether or not it
     //              is their turn prompts the human to give two cards to
@@ -50,6 +60,7 @@ public:
     // called by:	Board::play
     //----------------------------------------------------------------*/
     vector<Card> getHoldingHand() { return holdingHand; }
+    vector<Card> getPlayingHand() { return playingHand; }
 
     /*------------------------------------------------------------------
     // name:		getName
@@ -98,16 +109,6 @@ private:
     vector<Card> holdingHand;
     vector<Card> playingHand;
     int score;
-
-    /*------------------------------------------------------------------
-    // name:		canPlay
-    // description:	checks to see if the player can play a card given
-    //              what they have left in their playingHand and the current
-    //              sum.
-    // parameters:	int of the current pegging sum
-    // called by:	playCard
-    //----------------------------------------------------------------*/
-    bool canPlay(int sum);
 
     /*------------------------------------------------------------------
     // name:		printCards

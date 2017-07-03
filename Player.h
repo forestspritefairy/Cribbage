@@ -26,6 +26,16 @@ public:
     virtual void addScore(int newScore) = 0;
 
     /*------------------------------------------------------------------
+    // name:		canPlay
+    // description:	checks to see if the player can play a card given
+    //              what they have left in their playingHand and the current
+    //              sum.
+    // parameters:	int of the current pegging sum
+    // called by:	playCard
+    //----------------------------------------------------------------*/
+    virtual bool canPlay(int sum) = 0;
+
+    /*------------------------------------------------------------------
     // name:		getCribCards
     // description:	gives the player a bool that represents whether or not it
     //              is their crib and asks them for a vector of cards to be
@@ -42,6 +52,8 @@ public:
     // called by:	Board::play
     //----------------------------------------------------------------*/
     virtual vector<Card> getHoldingHand() = 0;
+
+    virtual vector<Card> getPlayingHand() = 0;
 
     /*------------------------------------------------------------------
     // name:		getName
