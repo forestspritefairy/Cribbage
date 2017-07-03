@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
 // file name:	Board.cpp
 // authors:     Ben Clark, Polina Eremenko
-// date:		06/25/2017
+// date:		07/02/2017
 // description: A representation of a Cribbage board. Controls the deck
 //              and Player classes. The play method acts as the driver for
 //              the program.
@@ -27,10 +27,10 @@ using namespace std;
 // name:		main
 // description:	Starts the Game by making a Board and calling play.
 //----------------------------------------------------------------*/
-int main() {
-    Board *b = new Board();
-    b->play();
-}
+//int main() {
+//    Board *b = new Board();
+//    b->play();
+//}
 
 /*------------------------------------------------------------------
 // name:		Board
@@ -256,6 +256,18 @@ void Board::play() {
 
         Card *cut = &deck->draw();
         
+        //If the Cut was a Jack then the person whose crib it is gets 2 points
+        if (cut->id == 11) {
+            if(turn) {
+                player1->addScore(2);
+                cout << "You gained 2 points from the Jack cut" << endl;
+            } else {
+                player2->addScore(2);
+                cout << "Computer gained 2 points from the Jack cut" << endl;
+            }
+
+            if(hasWon()) break;
+        }
         //Calculate the hand scores
         vector<int> p1Score = calculateHandScore(player1->getHoldingHand(), *cut);
         vector<int> p2Score = calculateHandScore(player2->getHoldingHand(), *cut);
@@ -287,12 +299,12 @@ void Board::play() {
         deck->resetDeck();
     }
     ClearScreen();
-    if (player1->getScore() > player2->getScore()) {
+
+    if (player1->getScore() > player2->getScore()) 
         cout << "Player 1 has won the game. Good Job!" << endl;
-    }
-    else {
+    else 
         cout << "Player 2 has won the game. Good Job!" << endl;
-    }
+    
     cin.get();
     cin.get();
 }
@@ -329,9 +341,9 @@ void Board::printTable(vector<int> p1Scores, vector<int> p2Scores, Card cut) {
     vector<Card> holdingHandP1 = player1->getHoldingHand();
     vector<Card> holdingHandP2 = player2->getHoldingHand();
 
-    for (int i = 0; i < holdingHandP1.size(); i++) {
+    for (int i = 0; i < holdingHandP1.size(); i++) 
         cout << "|          | " << holdingHandP1[i] << "   |  " << holdingHandP2[i] << "|" << endl;
-    }
+    
     cout << "|----------|---------------------|-------------------|" << endl;
     cout << "|Cut       | " << cut << "   |  " << cut << "|" << endl;
     cout << "|----------|---------------------|-------------------|" << endl;

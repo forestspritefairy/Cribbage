@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
 // file name:	Player.h
 // authors:     Ben Clark, Polina Eremenko
-// date:		06/29/2017
+// date:		07/02/2017
 // description: A representation of a player in a Cribbage game. Player
 //              is a pure abstract class and only serves as a mold for
 //              board to call upon.

@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
 // file name:	Card.cpp
 // authors:     Ben Clark, Polina Eremenko
-// date:		07/01/2017
+// date:		07/02/2017
 // description: A representation of a Card. Card's contain an id, suit
 //              and value. Card has overloads for all the compare operators
 //              and an overload for <<.

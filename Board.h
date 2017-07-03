@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
 // file name:	Board.h
 // authors:     Ben Clark, Polina Eremenko
-// date:		06/25/2017
+// date:		07/02/2017
 // description: A representation of a Cribbage board. Controls the deck
 //              and Player classes. The play method acts as the driver for
 //              the program.
