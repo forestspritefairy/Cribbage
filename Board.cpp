@@ -165,6 +165,17 @@ bool Board::pegging(bool turn, vector<int> &p1, vector<int> &p2) {
     while (player1->getPlayingHand().size() > 0 || player2->getPlayingHand().size() > 0) {
         //If neither player can play then reset the pegging
         if (!(player1->canPlay(sum) || player2->canPlay(sum))) {
+            if(sum != 31){
+                if (!turn) {
+                    p2[5] += 1;
+                    cout << player2->getName();
+                } else {
+                    p1[5] += 1;
+                    cout << "You";
+                }
+                cout << " pegged 1 points" << endl;
+                if (hasWon()) return true;
+            }
             sum = 0;
             pastCards.clear();
         }
@@ -178,7 +189,6 @@ bool Board::pegging(bool turn, vector<int> &p1, vector<int> &p2) {
         
         //Player played a valid Card.
         if (play.id != 0) {
-            //ClearScreen();
             pastCards.push_back(play);
             sum += play.value;
             int score = checkForPeggingPoints(pastCards, sum);
@@ -188,14 +198,17 @@ bool Board::pegging(bool turn, vector<int> &p1, vector<int> &p2) {
                     cout << player2->getName();
                 } else {
                     p1[5] += score;
-                    cout << "You ";
+                    cout << "You";
                 }
-                cout <<"pegged " << score << " points" << endl;
+                cout <<" pegged " << score << " points" << endl;
                 if(hasWon()) return true;
             }
         }
         turn = !turn;
     }
+
+    (!turn) ? p2[5] += (sum == 31 ? 2 : 1) : p1[5] += (sum == 31 ? 2 : 1);
+    if (hasWon()) return true;
     return false;
 }
 
@@ -209,15 +222,22 @@ bool Board::pegging(bool turn, vector<int> &p1, vector<int> &p2) {
 //----------------------------------------------------------------*/
 void Board::play() {
     bool turn = true;
+
+    vector<int> p1Score;
+    vector<int> p2Score;
+    Card *cut;
+
+    vector<Card> crib;
+
     while (true) {
         deal();
 
         //Get the crib cards from players and set them to the crib
-        vector<Card> crib = player1->getCribCards(turn);
+        crib = player1->getCribCards(turn);
         vector<Card> cards2 = player2->getCribCards(turn);
         crib.insert(crib.end(), cards2.begin(), cards2.end());
 
-        Card *cut = &deck->draw();
+        cut = &deck->draw();
         
         //If the Cut was a Jack then the person whose crib it is gets 2 points
         if (cut->id == 11) {
@@ -232,8 +252,8 @@ void Board::play() {
             if(hasWon()) break;
         }
         //Calculate the hand scores
-        vector<int> p1Score = calculateHandScore(player1->getHoldingHand(), *cut);
-        vector<int> p2Score = calculateHandScore(player2->getHoldingHand(), *cut);
+        p1Score = calculateHandScore(player1->getHoldingHand(), *cut);
+        p2Score = calculateHandScore(player2->getHoldingHand(), *cut);
         vector<int> cribScores = calculateHandScore(crib, *cut);
 
         //If pegging returns true someone won the game.
@@ -257,19 +277,16 @@ void Board::play() {
         deck->resetDeck();
     }
     ClearScreen();
-    if (player1->getScore() > 120 && player2->getScore() > 120) {
-        if (turn) {
-            cout << "Player 2 has won the game. Good Job!" << endl;
-        } else {
-            cout << "Player 1 has won the game. Good Job!" << endl;
-        }
-    } else if (player1->getScore() > player2->getScore()) 
-        cout << "Player 1 has won the game. Good Job!" << endl;
-    else 
-        cout << "Player 2 has won the game. Good Job!" << endl;
-    
-    cin.get();
-    cin.get();
+
+    if (player1->getScore() > 120 && player2->getScore() > 120)
+        if (turn) cout << player2->getName() << " has won the game. Good Job!" << endl;
+        else cout << player1->getName() << " has won the game. Good Job!" << endl;
+    else if (player1->getScore() > player2->getScore()) 
+        cout << player1->getName() << " has won the game. Good Job!" << endl;
+    else cout << player2->getName() << " has won the game. Good Job!" << endl;
+
+    cout << endl;
+    printTable(p1Score, p2Score, crib, turn, *cut);
 }
 
 /*------------------------------------------------------------------
@@ -328,8 +345,8 @@ void Board::printTable(vector<int> p1Scores, vector<int> p2Scores, vector<Card> 
          << format(p2Scores[2]) << "       | Of a Kind: " << format(cribScores[2]) << "       |" << endl;
     cout << "|          | Flush:     " << format(p1Scores[3]) << "       | Flush:     " 
          << format(p2Scores[3]) << "       | Flush:     " << format(cribScores[3]) << "       |" << endl;
-    cout << "|          | Nubs:      " << format(p1Scores[4]) << "       | Nubs:      " 
-         << format(p2Scores[4]) << "       | Nubs:      " << format(cribScores[4]) << "       |" << endl;
+    cout << "|          | Nobs:      " << format(p1Scores[4]) << "       | Nobs:      " 
+         << format(p2Scores[4]) << "       | Nobs:      " << format(cribScores[4]) << "       |" << endl;
     cout << "|          | Pegging:   " << format(p1Scores[5]) << "       | Pegging:   "
         << format(p2Scores[5]) << "       |                     |" << endl;
     cout << "|----------|---------------------|---------------------|---------------------|" << endl;
