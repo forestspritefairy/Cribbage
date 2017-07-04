@@ -27,10 +27,10 @@ using namespace std;
 // name:		main
 // description:	Starts the Game by making a Board and calling play.
 //----------------------------------------------------------------*/
-//int main() {
-//    Board *b = new Board();
-//    b->play();
-//}
+int main() {
+    Board *b = new Board();
+    b->play();
+}
 
 /*------------------------------------------------------------------
 // name:		Board
@@ -156,83 +156,46 @@ bool Board::inARow(vector<int> v) {
 // called by:	play
 //----------------------------------------------------------------*/
 bool Board::pegging(bool turn, vector<int> &p1, vector<int> &p2) {
+    ClearScreen();
     int sum = 0;
-    int player1CardsPlayed = 0;
-    int player2CardsPlayed = 0;
-    int compPrevScore = 0;
-    int playerPrevScore = 0;
-    int compTotalScore = 0;
-    int playerTotalScore = 0;
-
-    bool playTurn = turn;
-    bool passTrack = false;
-
     vector<Card> pastCards;
-    vector<vector<Card>> test;
+    p1.push_back(0);
+    p2.push_back(0);
 
-    while (player1CardsPlayed < 4 || player2CardsPlayed < 4) {
-        //Player whoes turn it is plays a card.
-        //If the value is 0 they could not play.
+    while (player1->getPlayingHand().size() > 0 || player2->getPlayingHand().size() > 0) {
+        //If neither player can play then reset the pegging
+        if (!(player1->canPlay(sum) || player2->canPlay(sum))) {
+            sum = 0;
+            pastCards.clear();
+        }
+
         Card play;
-        if (playTurn) {
-            play = player2->playCard(pastCards, sum);
-            if (play.id != 0) player2CardsPlayed++;
-        } else {
-            ClearScreen();
-
-            if (compPrevScore > 0) {
-                cout << player2->getName() << " pegged " << compPrevScore << " points." << endl << endl;
-                compTotalScore += compPrevScore;
-                compPrevScore = 0;
-            }
-            if (playerPrevScore > 0) {
-                cout << "You pegged " << playerPrevScore << " points." << endl << endl;
-                playerTotalScore += playerPrevScore;
-                playerPrevScore = 0;
-            }
-
+        if(turn) play = player2->playCard(pastCards, sum);
+        else {
             play = player1->playCard(pastCards, sum);
-            if (play.id != 0) player1CardsPlayed++;
+            ClearScreen();
         }
-
-        //If the player could not play tell the program that they passed.
-        //If the other player had already passed then reset the sum and replay
-        int score = 0;
-        if (play.id == 0) {
-            if (passTrack) {
-                sum = 0;
-                pastCards.clear();
-                score++;
-            }
-            else passTrack = true;
-            //If they could play figure out if they got any points.
-        } else {
-            passTrack = false;
-            sum += play.value;
+        
+        //Player played a valid Card.
+        if (play.id != 0) {
+            //ClearScreen();
             pastCards.push_back(play);
-
-            score = checkForPeggingPoints(pastCards, sum);
+            sum += play.value;
+            int score = checkForPeggingPoints(pastCards, sum);
+            if (score > 0) {
+                if (turn) {
+                    p2[5] += score;
+                    cout << player2->getName();
+                } else {
+                    p1[5] += score;
+                    cout << "You ";
+                }
+                cout <<"pegged " << score << " points" << endl;
+                if(hasWon()) return true;
+            }
         }
-
-        if (playTurn) {
-            player2->addScore(score);
-            compPrevScore += score;
-        } else {
-            player1->addScore(score);
-            playerPrevScore += score;
-        }
-
-        //Check if the person who played has won the game.
-        if (hasWon()) {
-            p1.push_back(playerTotalScore);
-            p2.push_back(compTotalScore);
-            return true;
-        }
-        playTurn = !playTurn;
+        turn = !turn;
     }
-
-    p1.push_back(playerTotalScore);
-    p2.push_back(compTotalScore);
     return false;
 }
 
@@ -271,36 +234,36 @@ void Board::play() {
         //Calculate the hand scores
         vector<int> p1Score = calculateHandScore(player1->getHoldingHand(), *cut);
         vector<int> p2Score = calculateHandScore(player2->getHoldingHand(), *cut);
+        vector<int> cribScores = calculateHandScore(crib, *cut);
 
         //If pegging returns true someone won the game.
         if (pegging(turn, p1Score, p2Score)) break;
 
-        printTable(p1Score, p2Score, *cut);
+        //Adding the points that each player recived.
+        int p1Total = p1Score[0] + p1Score[1] + p1Score[2] + p1Score[3] + p1Score[4] + p1Score[5];
+        int p2Total = p2Score[0] + p2Score[1] + p2Score[2] + p2Score[3] + p2Score[4] + p2Score[5];
+        int cribTotal = cribScores[0] + cribScores[1] + cribScores[2] + cribScores[3] + cribScores[4];
+        
+        player1->addScore(p1Total);
+        player2->addScore(p2Total);
+        turn ? player1->addScore(cribTotal) : player2->addScore(cribTotal);
 
-        int p1Total = p1Score[0] + p1Score[1] + p1Score[2] + p1Score[3];
-        int p2Total = p2Score[0] + p2Score[1] + p2Score[2] + p2Score[3];
         //Checking to see if either player won.
-        if (turn) {
-            player2->addScore(p2Total);
-            if (hasWon()) break;
-            
-            player1->addScore(p1Total);
-            if (hasWon()) break;
-        } else {
-            player1->addScore(p1Total);
-            if (hasWon()) break;
-            
-            player2->addScore(p2Total);
-            if (hasWon()) break;
-        }
+        if(hasWon()) break;
+        printTable(p1Score, p2Score, crib, turn, *cut);
         
         //Change Turn and reset the deck
         turn = !turn;
         deck->resetDeck();
     }
     ClearScreen();
-
-    if (player1->getScore() > player2->getScore()) 
+    if (player1->getScore() > 120 && player2->getScore() > 120) {
+        if (turn) {
+            cout << "Player 2 has won the game. Good Job!" << endl;
+        } else {
+            cout << "Player 1 has won the game. Good Job!" << endl;
+        }
+    } else if (player1->getScore() > player2->getScore()) 
         cout << "Player 1 has won the game. Good Job!" << endl;
     else 
         cout << "Player 2 has won the game. Good Job!" << endl;
@@ -319,7 +282,7 @@ void Board::play() {
 // returns:		none.
 // called by:	play
 //----------------------------------------------------------------*/
-void Board::printTable(vector<int> p1Scores, vector<int> p2Scores, Card cut) {
+void Board::printTable(vector<int> p1Scores, vector<int> p2Scores, vector<Card> crib, bool turn, Card cut) {
     ClearScreen();
     cout << "Total Scores" << endl;
     cout << "-------------------" << endl;
@@ -333,41 +296,54 @@ void Board::printTable(vector<int> p1Scores, vector<int> p2Scores, Card cut) {
     cout << endl;
 
     cout << "Round Scores" << endl;
-    cout << "------------------------------------------------------" << endl;
-    cout << "|Criteria  | Player 1            | Player 2          |" << endl;
-    cout << "|----------|---------------------|-------------------|" << endl;
-    cout << "|Hand      | Type    Suit        |  Type    Suit     |" << endl;
+    cout << "------------------------------------------------------------------------------" << endl;
+    cout << "|Criteria  |";
+
+    string p1Name = player1->getName();
+    string p2Name = player2->getName();
+    printName(p1Name);
+    printName(p2Name);
+    if(turn) printName(p1Name + "'s Crib");
+    else printName(p2Name + "'s Crib");
+    cout << endl;
+
+    cout << "|----------|---------------------|---------------------|---------------------|" << endl;
+    cout << "|Hand      | Type    Suit        | Type    Suit        | Type    Suit        |" << endl;
 
     vector<Card> holdingHandP1 = player1->getHoldingHand();
     vector<Card> holdingHandP2 = player2->getHoldingHand();
+    vector<int> cribScores = calculateHandScore(crib, cut);
 
     for (int i = 0; i < holdingHandP1.size(); i++) 
-        cout << "|          | " << holdingHandP1[i] << "   |  " << holdingHandP2[i] << "|" << endl;
+        cout << "|          | " << holdingHandP1[i] << "   | " << holdingHandP2[i] << "   | " << crib[i] << "   |" << endl;
     
-    cout << "|----------|---------------------|-------------------|" << endl;
-    cout << "|Cut       | " << cut << "   |  " << cut << "|" << endl;
-    cout << "|----------|---------------------|-------------------|" << endl;
+    cout << "|----------|---------------------|---------------------|---------------------|" << endl;
+    cout << "|Cut       | " << cut << "   | " << cut << "   | " << cut << "   |" << endl;
+    cout << "|----------|---------------------|---------------------|---------------------|" << endl;
     cout << "|Scores    | 15's:      " << format(p1Scores[0]) << "       | 15's:      " 
-         << format(p2Scores[0]) << "     |" << endl;
+         << format(p2Scores[0]) << "       | 15's:      " << format(cribScores[0]) << "       |" << endl;
     cout << "|          | Runs:      " << format(p1Scores[1]) << "       | Runs:      " 
-         << format(p2Scores[1]) << "     |" << endl;
+         << format(p2Scores[1]) << "       | Runs:      " << format(cribScores[1]) << "       |" << endl;
     cout << "|          | Of a Kind: " << format(p1Scores[2]) << "       | Of a Kind: " 
-         << format(p2Scores[2]) << "     |" << endl;
+         << format(p2Scores[2]) << "       | Of a Kind: " << format(cribScores[2]) << "       |" << endl;
     cout << "|          | Flush:     " << format(p1Scores[3]) << "       | Flush:     " 
-         << format(p2Scores[3]) << "     |" << endl;
+         << format(p2Scores[3]) << "       | Flush:     " << format(cribScores[3]) << "       |" << endl;
     cout << "|          | Nubs:      " << format(p1Scores[4]) << "       | Nubs:      " 
-         << format(p2Scores[4]) << "     |" << endl;
+         << format(p2Scores[4]) << "       | Nubs:      " << format(cribScores[4]) << "       |" << endl;
     cout << "|          | Pegging:   " << format(p1Scores[5]) << "       | Pegging:   "
-        << format(p2Scores[5]) << "     |" << endl;
-    cout << "|----------|---------------------|-------------------|" << endl;
+        << format(p2Scores[5]) << "       |                     |" << endl;
+    cout << "|----------|---------------------|---------------------|---------------------|" << endl;
 
-    int p1Total = (p1Scores[0] + p1Scores[1] + p1Scores[2] + p1Scores[3] + p1Scores[4]);
-    int p2Total = (p2Scores[0] + p2Scores[1] + p2Scores[2] + p2Scores[3] + p1Scores[4]);
+
+
+    int p1Total = (p1Scores[0] + p1Scores[1] + p1Scores[2] + p1Scores[3] + p1Scores[4] + p1Scores[5]);
+    int p2Total = (p2Scores[0] + p2Scores[1] + p2Scores[2] + p2Scores[3] + p2Scores[4] + p2Scores[5]);
+    int cribTotal = (cribScores[0] + cribScores[1] + cribScores[2] + cribScores[3] + cribScores[4]);
 
     cout << "|Total     | " << format(p1Total) << "                  | " 
-         << format(p2Total) << "                |" << endl;
+         << format(p2Total) << "                  | " << format(cribTotal) << "                  |" << endl;
 
-    cout << "------------------------------------------------------" << endl;
+    cout << "------------------------------------------------------------------------------" << endl;
     cout << endl;
     cout << "Press any key to continue.";
     cin.get();
@@ -430,4 +406,18 @@ void ClearScreen() {
 //----------------------------------------------------------------*/
 string format(int num) {
     return (num < 10) ? (to_string(num) + " ") : to_string(num);
+}
+
+/*------------------------------------------------------------------
+// name:		printName
+// description:	Takes in a name and prints one space before the name
+//              as many spaces as need after to make the total length 20
+// parameters:	string to be printed
+// returns:		none
+// called by:	printTable
+//----------------------------------------------------------------*/
+void printName(string name) {
+    cout << " " << name;
+    for (int i = name.length(); i < 20; i++) cout << " ";
+    cout << "|";
 }

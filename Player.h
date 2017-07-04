@@ -53,6 +53,12 @@ public:
     //----------------------------------------------------------------*/
     virtual vector<Card> getHoldingHand() = 0;
 
+    /*------------------------------------------------------------------
+    // name:		getPlayingHand
+    // description:	gets the hand from the player.
+    // parameters:	none
+    // called by:	Board::play
+    //----------------------------------------------------------------*/
     virtual vector<Card> getPlayingHand() = 0;
 
     /*------------------------------------------------------------------

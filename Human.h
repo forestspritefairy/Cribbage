@@ -60,6 +60,13 @@ public:
     // called by:	Board::play
     //----------------------------------------------------------------*/
     vector<Card> getHoldingHand() { return holdingHand; }
+
+    /*------------------------------------------------------------------
+    // name:		getPlayingHand
+    // description:	gets the holdingHand from the player.
+    // parameters:	none
+    // called by:	Board::play
+    //----------------------------------------------------------------*/
     vector<Card> getPlayingHand() { return playingHand; }
 
     /*------------------------------------------------------------------

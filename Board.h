@@ -101,7 +101,7 @@ private:
     // returns:		none.
     // called by:	play
     //----------------------------------------------------------------*/
-    void printTable(vector<int> player1Scores, vector<int> player2Scores, Card cut);
+    void printTable(vector<int> player1Scores, vector<int> player2Scores, vector<Card> crib, bool turn, Card cut);
 
     Deck *deck;
     Player *player1;
@@ -127,3 +127,13 @@ void ClearScreen();
 // called by:	printTable
 //----------------------------------------------------------------*/
 string format(int num);
+
+/*------------------------------------------------------------------
+// name:		printName
+// description:	Takes in a name and prints one space before the name
+//              as many spaces as need after to make the total length 20
+// parameters:	string to be printed
+// returns:		none
+// called by:	printTable
+//----------------------------------------------------------------*/
+void printName(string name);
